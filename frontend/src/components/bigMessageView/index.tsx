@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { apiFetch } from '../../utils/api';
 //@ts-ignore
 import './style.sass';
 
@@ -37,20 +38,18 @@ const Index = () => {
 
    useEffect(() => {
       const fetchMessages = async () => {
+         // @ts-ignore
+         const apiUrl = import.meta.env.VITE_API_URL;
+         const userId = document.cookie.split('; ').find(row => row.startsWith('user_id='))?.split('=')[1];
+         
+         if (!userId) {
+            setError('User not authenticated');
+            setLoading(false);
+            return;
+         }
+
          try {
-            const userId = document.cookie.split('; ').find(row => row.startsWith('user_id='))?.split('=')[1];
-            if (!userId) {
-               setError('User not authenticated');
-               setLoading(false);
-               return;
-            }
-
-            //@ts-ignore
-            const apiUrl = import.meta.env.VITE_API_URL;
-            const response = await fetch(`${apiUrl}/messages/headers/received/${userId}`, {
-               credentials: 'include'
-            });
-
+            const response = await apiFetch(`${apiUrl}/messages/headers/received/${userId}`);
             if (response.ok) {
                const data = await response.json();
                setMessageData(data);
@@ -70,33 +69,55 @@ const Index = () => {
 
    return (
       <section id="bigMessageView">
-         <div className="headerRow">
-            <h1 className="dashboardSectionTitle">Messages</h1>
+         <div className="messages-header">
+            <div className="header-content">
+               <h1 className="dashboardSectionTitle">Inbox</h1>
+               <p className="section-subtitle">You have {messageData.filter(m => !m.isRead).length} unread messages.</p>
+            </div>
             <a href="/dashboard/student/messages/compose" className="composeButton">
-               <span>+ Compose</span>
+               <img src="/icons/overview.svg" alt="compose" style={{ filter: 'invert(1)', width: '18px' }} />
+               <span>Compose Message</span>
             </a>
          </div>
          
-         <div className="messageContainer">
+         <div className="messages-list-wrapper">
             {loading ? (
-               <div className="statusMessage">Loading messages...</div>
+               <div className="status-container">
+                  <div className="loader"></div>
+                  <p>Fetching your messages...</p>
+               </div>
             ) : error ? (
-               <div className="statusMessage error">{error}</div>
+               <div className="status-container error">
+                  <img src="/icons/attendance.svg" alt="error" />
+                  <p>{error}</p>
+               </div>
             ) : messageData.length > 0 ? (
-               messageData.map((data) => (
-                  <div key={data.messageId} className={`messageRecord ${data.isRead ? 'read' : 'unread'}`}>
-                     <a href={`/dashboard/student/messages/${data.messageId}`}>
-                        <div className="messageAuthor">{data.senderName}</div>
-                        <div className="messageContentWrapper">
-                           <div className="messageTitle">{data.messageTitle}</div>
-                           <div className="messageActualContent">{data.messageContent}</div>
+               <div className="messages-list">
+                  {messageData.map((data) => (
+                     <a href={`/dashboard/student/messages/${data.messageId}`} key={data.messageId} className={`message-row ${data.isRead ? 'read' : 'unread'}`}>
+                        <div className="status-indicator"></div>
+                        <div className="sender-avatar">
+                           {data.senderName.charAt(0)}
                         </div>
-                        <div className="messageDate">{formatDate(data.date)}</div>
+                        <div className="message-main">
+                           <div className="message-top">
+                              <span className="sender-name">{data.senderName}</span>
+                              <span className="message-time">{formatDate(data.date)}</span>
+                           </div>
+                           <div className="message-subject">{data.messageTitle}</div>
+                           <div className="message-snippet">{data.messageContent}</div>
+                        </div>
+                        <div className="message-actions">
+                           <img src="/icons/timetable.svg" alt="view" className="view-icon" />
+                        </div>
                      </a>
-                  </div>
-               ))
+                  ))}
+               </div>
             ) : (
-               <div className="statusMessage noMessages">Your inbox is empty.</div>
+               <div className="status-container empty">
+                  <img src="/icons/mail.svg" alt="empty" />
+                  <p>Your inbox is pristine. No messages found.</p>
+               </div>
             )}
          </div>
       </section>

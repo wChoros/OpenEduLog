@@ -33,6 +33,10 @@ app.get('/', (req: Request, res: Response) => {
    res.send('Hello, World!')
 })
 
+app.get('/healthcheck', (req: Request, res: Response) => {
+   res.send('OK')
+})
+
 app.use('/auth', authRouter)
 app.use('/grades', sessionVerify, gradesRouter)
 app.use('/groups', sessionVerify, groupsRouter)

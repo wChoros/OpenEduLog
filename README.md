@@ -64,6 +64,22 @@ If you prefer to run the components manually, follow these instructions.
 
 ---
 
+## 📸 Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/screenshot1.png" width="45%" alt="Screenshot 1">
+  <img src="docs/screenshots/screenshot2.png" width="45%" alt="Screenshot 2">
+</p>
+<p align="center">
+  <img src="docs/screenshots/screenshot3.png" width="45%" alt="Screenshot 3">
+  <img src="docs/screenshots/screenshot4.png" width="45%" alt="Screenshot 4">
+</p>
+<p align="center">
+  <img src="docs/screenshots/screenshot5.png" width="45%" alt="Screenshot 5">
+</p>
+
+---
+
 ## 📝 Important Notes
 
 *   **Development Status:** Both frontend and backend are largely functional but were built with an ambitious scope. Some features or pages might be incomplete.

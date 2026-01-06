@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiFetch } from '../../utils/api';
 //@ts-ignore
 import './style.sass';
 
@@ -32,9 +33,7 @@ const ComposeMessage: React.FC = () => {
       try {
          //@ts-ignore
          const apiUrl = import.meta.env.VITE_API_URL;
-         const response = await fetch(`${apiUrl}/messages/search?query=${encodeURIComponent(query)}`, {
-            credentials: 'include'
-         });
+         const response = await apiFetch(`${apiUrl}/messages/search?query=${encodeURIComponent(query)}`);
          if (response.ok) {
             const data = await response.json();
             setSearchResults(data);
@@ -85,15 +84,14 @@ const ComposeMessage: React.FC = () => {
       try {
          //@ts-ignore
          const apiUrl = import.meta.env.VITE_API_URL;
-         const response = await fetch(`${apiUrl}/messages`, {
+         const response = await apiFetch(`${apiUrl}/messages`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                title,
                content,
                receivers: selectedRecipients.map(r => r.id)
-            }),
-            credentials: 'include'
+            })
          });
 
          if (response.ok) {
@@ -111,75 +109,87 @@ const ComposeMessage: React.FC = () => {
 
    return (
       <section id="composeMessageView">
-         <div className="headerRow">
-            <h1 className="dashboardSectionTitle">Compose Message</h1>
+         <div className="compose-header">
             <a href="/dashboard/student/messages" className="backButton">
-               <span>Cancel</span>
+               <img src="/icons/arrow-left.svg" alt="back" />
+               <span>Discard & Return</span>
             </a>
+            <h1 className="dashboardSectionTitle">New Message</h1>
          </div>
 
-         <div className="composeContainer">
+         <div className="compose-card">
+            {error && <div className="errorMessage">{error}</div>}
+            
             <form onSubmit={handleSubmit}>
-               {error && <div className="errorMessage">{error}</div>}
-               
-               <div className="formGroup recipientGroup">
-                  <label>To:</label>
-                  <div className="recipientInputWrapper">
-                     <div className="selectedRecipients">
-                        {selectedRecipients.map(r => (
-                           <div key={r.id} className="recipientBadge">
-                              {r.firstName} {r.lastName}
-                              <button type="button" onClick={() => removeRecipient(r.id)}>&times;</button>
-                           </div>
-                        ))}
-                     </div>
-                     <input
-                        type="text"
-                        placeholder={selectedRecipients.length === 0 ? "Search for names..." : ""}
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                     />
-                     {searchResults.length > 0 && (
-                        <div className="searchResults">
-                           {searchResults.map(user => (
-                              <div 
-                                 key={user.id} 
-                                 className="searchItem"
-                                 onClick={() => addRecipient(user)}
-                              >
-                                 <span className="userName">{user.firstName} {user.lastName}</span>
-                                 <span className="userRole">{user.role}</span>
+               <div className="input-section">
+                  <div className="input-group recipient-group">
+                     <label>Recipient:</label>
+                     <div className="input-field">
+                        <div className="recipients-list">
+                           {selectedRecipients.map(r => (
+                              <div key={r.id} className="recipient-tag">
+                                 <span>{r.firstName} {r.lastName}</span>
+                                 <button type="button" onClick={() => removeRecipient(r.id)}>&times;</button>
                               </div>
                            ))}
+                           <input
+                              type="text"
+                              placeholder={selectedRecipients.length === 0 ? "Search for recipients..." : ""}
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                           />
                         </div>
-                     )}
+                        
+                        {searchResults.length > 0 && (
+                           <div className="search-results-dropdown">
+                              {searchResults.map(user => (
+                                 <div 
+                                    key={user.id} 
+                                    className="search-result-item"
+                                    onClick={() => addRecipient(user)}
+                                 >
+                                    <div className="avatar">{user.firstName.charAt(0)}</div>
+                                    <div className="info">
+                                       <span className="name">{user.firstName} {user.lastName}</span>
+                                       <span className="role">{user.role}</span>
+                                    </div>
+                                 </div>
+                              ))}
+                           </div>
+                        )}
+                     </div>
+                  </div>
+
+                  <div className="input-group">
+                     <label>Subject:</label>
+                     <div className="input-field">
+                        <input
+                           type="text"
+                           value={title}
+                           onChange={(e) => setTitle(e.target.value)}
+                           placeholder="What is this about?"
+                           required
+                        />
+                     </div>
+                  </div>
+
+                  <div className="input-group">
+                     <label>Message Content:</label>
+                     <div className="input-field">
+                        <textarea
+                           value={content}
+                           onChange={(e) => setContent(e.target.value)}
+                           placeholder="Type your message here..."
+                           required
+                        ></textarea>
+                     </div>
                   </div>
                </div>
 
-               <div className="formGroup">
-                  <label>Subject:</label>
-                  <input
-                     type="text"
-                     value={title}
-                     onChange={(e) => setTitle(e.target.value)}
-                     placeholder="Enter subject"
-                     required
-                  />
-               </div>
-
-               <div className="formGroup">
-                  <label>Message:</label>
-                  <textarea
-                     value={content}
-                     onChange={(e) => setContent(e.target.value)}
-                     placeholder="Write your message here..."
-                     required
-                  ></textarea>
-               </div>
-
-               <div className="formActions">
-                  <button type="submit" className="sendButton" disabled={sending}>
-                     {sending ? 'Sending...' : 'Send Message'}
+               <div className="compose-actions">
+                  <button type="submit" className="send-btn" disabled={sending}>
+                     <img src="/icons/overview.svg" alt="send" style={{ filter: 'invert(1)', width: '18px' }} />
+                     <span>{sending ? 'Sending...' : 'Send Message'}</span>
                   </button>
                </div>
             </form>

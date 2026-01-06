@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { apiFetch } from '../../utils/api';
 //@ts-ignore
 import './style.sass';
 
@@ -35,9 +36,7 @@ const Index = () => {
          try {
             //@ts-ignore
             const apiUrl = import.meta.env.VITE_API_URL;
-            const response = await fetch(`${apiUrl}/messages/content/received/${messageId}`, {
-               credentials: 'include'
-            });
+            const response = await apiFetch(`${apiUrl}/messages/content/received/${messageId}`);
 
             if (response.ok) {
                const data = await response.json();
@@ -79,39 +78,45 @@ const Index = () => {
 
    return (
       <section id="messageDetailsView">
-         <div className="headerRow">
-            <h1 className="dashboardSectionTitle">Message Info</h1>
+         <div className="details-header">
             <a href="/dashboard/student/messages" className="backButton">
-               <span>&larr; Back to Inbox</span>
+               <img src="/icons/arrow-left.svg" alt="back" />
+               <span>Back to Inbox</span>
             </a>
+            <h1 className="dashboardSectionTitle">Message Details</h1>
          </div>
 
-         <div className="messageDetailsContainer">
-            <div className="messageHeader">
-               <div className="subjectLine">{messageData.title}</div>
-               <div className="metaInfo">
-                  <div className="senderInfo">
-                     <span className="label">From:</span>
-                     <span className="value">{messageData.senderName}</span>
-                  </div>
-                  <div className="dateInfo">
-                     {new Date(messageData.date).toLocaleString()}
-                  </div>
+         <div className="message-details-card">
+            <div className="card-header">
+               <div className="sender-avatar">
+                  {messageData.senderName.charAt(0)}
                </div>
-               {messageData.receivers && messageData.receivers.length > 0 && (
-                  <div className="receiverInfo">
-                     <span className="label">To:</span>
-                     <span className="value">
-                        {messageData.receivers.map(r => r.name).join(', ')}
-                     </span>
+               <div className="header-text">
+                  <h2 className="subjectLine">{messageData.title}</h2>
+                  <div className="meta-info">
+                     <span className="sender-name">{messageData.senderName}</span>
+                     <span className="dot">•</span>
+                     <span className="date-info">{new Date(messageData.date).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</span>
                   </div>
-               )}
+                  {messageData.receivers && messageData.receivers.length > 0 && (
+                     <div className="receiver-line">
+                        <span className="label">To: </span>
+                        <span className="value">{messageData.receivers.map(r => r.name).join(', ')}</span>
+                     </div>
+                  )}
+               </div>
             </div>
             
-            <div className="messageBody">
+            <div className="message-body">
                {messageData.content}
             </div>
-
+            
+            <div className="card-footer">
+               <button className="reply-button">
+                  <img src="/icons/mail.svg" alt="reply" />
+                  <span>Reply</span>
+               </button>
+            </div>
          </div>
       </section>
    );

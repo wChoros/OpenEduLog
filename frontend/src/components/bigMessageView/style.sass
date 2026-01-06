@@ -1,11 +1,8 @@
 @use '../../../public/styles/variables'
 
-*
-    box-sizing: border-box
-
 #bigMessageView
     width: 100%
-    padding: 20px 50px
+    padding: 50px
     display: flex
     flex-direction: column
     align-items: center
@@ -13,122 +10,181 @@
     background-color: variables.$accent-light-gray
     min-height: 100vh
 
-    .headerRow
-        width: 90%
+    .messages-header
+        width: 100%
+        max-width: 1200px
         display: flex
         justify-content: space-between
-        align-items: center
-        margin-bottom: 20px
+        align-items: flex-end
+        margin-bottom: 40px
 
-        h1.dashboardSectionTitle
-            margin: 0
-            font-size: 32px
-            font-weight: 600
-            color: variables.$primary-color
+        .header-content
+            h1
+                margin: 0
+                font-size: 36px
+                font-weight: 700
+                color: variables.$accent-dark-gray
+            
+            .section-subtitle
+                margin: 5px 0 0 0
+                color: variables.$accent-dark-gray
+                font-size: 16px
+                opacity: 0.7
 
         .composeButton
-            background-color: variables.$primary-color
+            display: flex
+            align-items: center
+            gap: 10px
+            background-color: variables.$accent-dark-gray
             color: #fff
-            padding: 10px 20px
-            border-radius: 8px
+            padding: 12px 24px
+            border-radius: 12px
             text-decoration: none
-            font-weight: 500
-            transition: transform 0.2s, background-color 0.2s
-            box-shadow: variables.$soft-shadow
+            font-weight: 600
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15)
 
             &:hover
-                background-color: darken(variables.$primary-color, 10%)
                 transform: translateY(-2px)
+                box-shadow: 0 6px 20px rgba(0,0,0,0.2)
+                background-color: variables.$accent-deep-orange
 
-    .messageContainer
-        width: 90%
+    .messages-list-wrapper
+        width: 100%
+        max-width: 1200px
         background-color: #fff
-        border-radius: 12px
-        box-shadow: variables.$strong-shadow
+        border-radius: 20px
+        box-shadow: variables.$soft-shadow
         overflow: hidden
-        display: flex
-        flex-direction: column
+        border: 1px solid rgba(0,0,0,0.05)
 
-        .statusMessage
-            padding: 40px
-            text-align: center
+        .status-container
+            padding: 80px 20px
+            display: flex
+            flex-direction: column
+            align-items: center
+            gap: 20px
             color: #666
-            font-size: 18px
+
+            .loader
+                width: 40px
+                height: 40px
+                border: 3px solid #f3f3f3
+                border-top: 3px solid variables.$accent-deep-orange
+                border-radius: 50%
+                animation: spin 1s linear infinite
+
+            img
+                width: 64px
+                opacity: 0.2
 
             &.error
-                color: variables.$error-color
-            
-            &.noMessages
-                font-style: italic
+                color: #ef4444
+                img
+                    opacity: 1
 
-        .messageRecord
-            width: 100%
-            border-bottom: 1px solid #eee
-            transition: background-color 0.2s
+        .messages-list
+            display: flex
+            flex-direction: column
 
-            &:last-child
-                border-bottom: none
-
-            &:hover
-                background-color: #f9f9f9
-
-            &.unread
-                background-color: #f0f7ff // Light blue for unread
-                font-weight: 600
-                
-                .messageAuthor, .messageTitle
-                    color: #000
-
-            &.read
-                background-color: #fff
-                color: #555
-
-            a
-                width: 100%
-                padding: 15px 20px
+            .message-row
                 display: flex
                 align-items: center
+                padding: 24px 30px
                 text-decoration: none
                 color: inherit
+                border-bottom: 1px solid #f5f5f5
+                transition: all 0.2s ease
+                position: relative
 
-                .messageAuthor
-                    width: 160px
-                    min-width: 160px
-                    flex-shrink: 0
-                    font-size: 16px
-                    white-space: nowrap
-                    overflow: hidden
-                    text-overflow: ellipsis
+                &:last-child
+                    border-bottom: none
+
+                &:hover
+                    background-color: #fafafa
+                    padding-left: 35px
+
+                    .message-actions
+                        opacity: 1
+                        transform: translateX(0)
+
+                &.unread
+                    background-color: rgba(255, 107, 53, 0.03) // Tiny bit of orange
+                    
+                    .status-indicator
+                        background-color: variables.$accent-deep-orange
+                    
+                    .sender-name, .message-subject 
+                        font-weight: 700
+                        color: #000
+
+                .status-indicator
+                    width: 8px
+                    height: 8px
+                    border-radius: 50%
+                    background-color: transparent
                     margin-right: 20px
 
-                .messageContentWrapper
+                .sender-avatar
+                    width: 48px
+                    height: 48px
+                    border-radius: 14px
+                    background-color: #f0f0f0
+                    display: flex
+                    align-items: center
+                    justify-content: center
+                    font-weight: 700
+                    font-size: 20px
+                    color: variables.$accent-dark-gray
+                    margin-right: 25px
+                    flex-shrink: 0
+
+                .message-main
                     flex: 1
                     display: flex
                     flex-direction: column
-                    padding: 0 20px
+                    gap: 4px
                     overflow: hidden
 
-                    .messageTitle
+                    .message-top
+                        display: flex
+                        justify-content: space-between
+                        align-items: center
+                        
+                        .sender-name
+                            font-size: 16px
+                            color: #333
+                        
+                        .message-time
+                            font-size: 13px
+                            color: #999
+
+                    .message-subject
                         font-size: 16px
-                        margin-bottom: 4px
+                        color: #1a1a1a
                         white-space: nowrap
                         overflow: hidden
                         text-overflow: ellipsis
 
-                    .messageActualContent
+                    .message-snippet
                         font-size: 14px
                         color: #666
                         white-space: nowrap
                         overflow: hidden
                         text-overflow: ellipsis
-                        font-weight: normal
 
-                .messageDate
-                    width: 120px
-                    min-width: 120px
-                    flex-shrink: 0
-                    font-size: 14px
-                    text-align: right
-                    color: #888
-                    white-space: nowrap
-                    margin-left: 20px
+                .message-actions
+                    margin-left: 30px
+                    opacity: 0
+                    transform: translateX(10px)
+                    transition: all 0.3s ease
+
+                    .view-icon
+                        width: 20px
+                        filter: opacity(0.3)
+
+@keyframes spin
+    0%
+        transform: rotate(0deg)
+    100%
+        transform: rotate(360deg)

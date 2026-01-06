@@ -5,6 +5,7 @@ import * as EmailValidator from 'email-validator'
 import passwordValidator from 'password-validator'
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
+import { sessionVerify } from '../middleware/session_verify'
 
 const authRouter = express.Router()
 const prisma = new PrismaClient()
@@ -215,6 +216,26 @@ authRouter.post('/register', async (req: Request, res: Response): Promise<void> 
    } catch (error) {
       res.status(500).json({ message: `Internal Server Error: ${error}` })
    }
+})
+
+authRouter.get('/me', sessionVerify, async (req: Request, res: Response): Promise<void> => {
+   try {
+      const user = req.body.user
+      if (!user) {
+         res.status(401).json({ message: 'User not found' })
+         return
+      }
+      const { password, ...userWithoutPassword } = user
+      res.status(200).json(userWithoutPassword)
+   } catch (error) {
+      res.status(500).json({ message: `Internal Server Error: ${error}` })
+   }
+})
+
+authRouter.get('/instanceinfo', (req: Request, res: Response): void => {
+   res.json({
+      schoolName: process.env.VITE_SCHOOL_NAME || 'OpenEduLog Default school'
+   })
 })
 
 export default authRouter
