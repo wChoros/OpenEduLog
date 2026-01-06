@@ -52,7 +52,7 @@ export default function GradesDashboard() {
                const data = await res.json()
                setError(data.message || 'Failed to fetch grades')
             }
-         } catch (err) {
+         } catch (_err) {
             setError('Network error: Failed to reach server')
          } finally {
             setLoading(false)

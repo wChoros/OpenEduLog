@@ -23,7 +23,7 @@ announcementsRouter.get('/', async (req: Request, res: Response) => {
          },
       })
       res.json(announcements)
-   } catch (error) {
+   } catch (_error) {
       res.status(500).json({ message: 'Internal Server Error' })
    }
 })
@@ -35,7 +35,7 @@ announcementsRouter.post(
    async (req: Request, res: Response) => {
       console.log('POST /announcements request received', req.body)
       const { title, content } = req.body
-      const user = (req as any).body.user // From sessionVerify/authorize
+      const user = (req as Request & { body: { user: { id: number; role: string } } }).body.user
 
       if (!title || !content) {
          res.status(400).json({ message: 'Title and content are required' })
@@ -51,7 +51,7 @@ announcementsRouter.post(
             },
          })
          res.status(201).json(newAnnouncement)
-      } catch (error) {
+      } catch {
          res.status(500).json({ message: 'Internal Server Error' })
       }
    }
@@ -69,7 +69,7 @@ announcementsRouter.delete(
             where: { id: parseInt(id, 10) },
          })
          res.json({ message: 'Announcement deleted' })
-      } catch (error) {
+      } catch {
          res.status(500).json({ message: 'Internal Server Error' })
       }
    }

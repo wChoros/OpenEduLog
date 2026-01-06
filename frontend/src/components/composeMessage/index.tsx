@@ -38,8 +38,8 @@ const ComposeMessage: React.FC = () => {
             const data = await response.json();
             setSearchResults(data);
          }
-      } catch (err) {
-         console.error('Search error:', err);
+      } catch (_err) {
+         console.error('Search error:', _err);
       } finally {
          setSearchLoading(false);
       }
@@ -100,7 +100,7 @@ const ComposeMessage: React.FC = () => {
             const data = await response.json();
             setError(data.message || 'Failed to send message');
          }
-      } catch (err) {
+      } catch (_err) {
          setError('An error occurred while sending the message');
       } finally {
          setSending(false);

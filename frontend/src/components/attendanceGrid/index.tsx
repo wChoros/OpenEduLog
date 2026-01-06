@@ -91,7 +91,7 @@ function formatWeekRange(dateRange: DateRange): string {
 export default function AttendanceGrid() {
    const [attendance, setAttendance] = useState<AttendanceRecord[]>([])
    const [loading, setLoading] = useState(true)
-   const [error, setError] = useState<string | null>(null)
+   const [_error, setError] = useState<string | null>(null)
    const [selectedIds, setSelectedIds] = useState<number[]>([])
    const [showModal, setShowModal] = useState(false)
    const [justificationText, setJustificationText] = useState('')
@@ -118,7 +118,7 @@ export default function AttendanceGrid() {
          } else {
             setError(data.message || 'Failed to fetch attendance')
          }
-      } catch (err) {
+      } catch (_err) {
          setError('Failed to fetch attendance')
       } finally {
          setLoading(false)
@@ -160,7 +160,7 @@ export default function AttendanceGrid() {
             const data = await res.json()
             alert(data.message || 'Failed to submit justification')
          }
-      } catch (err) {
+      } catch (_err) {
          alert('Failed to submit justification')
       }
    }

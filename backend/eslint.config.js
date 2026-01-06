@@ -16,6 +16,14 @@ module.exports = [
     },
     rules: {
       ...require('@typescript-eslint/eslint-plugin').configs.recommended.rules,
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
     },
   },
 ];

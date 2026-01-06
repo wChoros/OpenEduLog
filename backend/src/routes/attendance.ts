@@ -54,7 +54,7 @@ attendanceRouter.post(
    authorize('update', 'Attendance'),
    async (req, res) => {
       const { attendanceIds, justification } = req.body
-      const user: any = req.body.user
+      const user = req.body.user as { id: number; role: string }
 
       if (!attendanceIds || !Array.isArray(attendanceIds) || justification === undefined) {
          res.status(400).json({ message: 'Missing attendanceIds (array) or justification' })
@@ -73,7 +73,7 @@ attendanceRouter.post(
          }
 
          if (user.role === 'STUDENT') {
-            const forbidden = records.some((r: any) => r.studentId !== user.id)
+            const forbidden = records.some((r: { studentId: number }) => r.studentId !== user.id)
             if (forbidden) {
                res.status(403).json({ message: 'Forbidden: You can only justify your own absences' })
                return

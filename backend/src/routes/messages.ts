@@ -135,19 +135,34 @@ messagesRouter.get('/headers/received/:userId/:offset?', async (req: Request, re
          updatedAt: 'desc',
       },
       skip: offsetValue,
-      take: take,
-   })
+   take: take,
+})
 
-   // Transform the result to match the requested format
-   const result = messages.map((msg: any) => ({
-      messageId: msg.id,
-      messageTitle: msg.title,
-      messageContent: msg.content.slice(0, 50),
-      date: msg.updatedAt,
-      isRead: msg.receivers[0].isRead,
-      senderId: msg.author.id,
-      senderName: `${msg.author.firstName} ${msg.author.lastName}`,
-   }))
+interface ReceivedMessage {
+   id: number
+   title: string
+   content: string
+   author: {
+      id: number
+      firstName: string
+      lastName: string
+   }
+   updatedAt: Date
+   receivers: {
+      isRead: boolean
+   }[]
+}
+
+// Transform the result to match the requested format
+const result = (messages as unknown as ReceivedMessage[]).map((msg) => ({
+   messageId: msg.id,
+   messageTitle: msg.title,
+   messageContent: msg.content.slice(0, 50),
+   date: msg.updatedAt,
+   isRead: msg.receivers[0].isRead,
+   senderId: msg.author.id,
+   senderName: `${msg.author.firstName} ${msg.author.lastName}`,
+}))
 
    res.json(result)
    return
@@ -202,22 +217,37 @@ messagesRouter.get('/headers/sent/:userId/:offset?', async (req: Request, res: R
          },
       },
       skip: offset,
-      take: take,
-   })
+   take: take,
+})
 
-   // Transform the result to match the requested format
-   // one message can be sent to multiple users
-   const result = messages.map((msg: any) => ({
-      messageId: msg.id,
-      messageTitle: msg.title,
-      messageContent: msg.content.slice(0, 50),
-      date: msg.updatedAt,
-      receivers: msg.receivers.map((receiver: any) => ({
-         receiverId: receiver.userId,
-         receiverName: `${receiver.user.firstName} ${receiver.user.lastName}`,
-         isRead: receiver.isRead,
-      })),
-   }))
+interface SentMessage {
+   id: number
+   title: string
+   content: string
+   updatedAt: Date
+   receivers: {
+      userId: number
+      user: {
+         firstName: string
+         lastName: string
+      }
+      isRead: boolean
+   }[]
+}
+
+// Transform the result to match the requested format
+// one message can be sent to multiple users
+const result = (messages as unknown as SentMessage[]).map((msg) => ({
+   messageId: msg.id,
+   messageTitle: msg.title,
+   messageContent: msg.content.slice(0, 50),
+   date: msg.updatedAt,
+   receivers: msg.receivers.map((receiver) => ({
+      receiverId: receiver.userId,
+      receiverName: `${receiver.user.firstName} ${receiver.user.lastName}`,
+      isRead: receiver.isRead,
+   })),
+}))
 
    res.json(result)
    return
@@ -297,7 +327,7 @@ messagesRouter.get('/content/received/:messageId/', async (req: Request, res: Re
       date: message.updatedAt,
       senderId: message.author.id,
       senderName: `${message.author.firstName} ${message.author.lastName}`,
-      receivers: message.receivers.map((receiver: any) => ({
+      receivers: message.receivers.map((receiver: { isRead: boolean; user: { id: number; firstName: string; lastName: string } }) => ({
          id: receiver.user.id,
          name: `${receiver.user.firstName} ${receiver.user.lastName}`,
          isRead: receiver.isRead,
@@ -350,7 +380,7 @@ messagesRouter.get('/content/sent/:messageId', async (req: Request, res: Respons
       messageId: message.id,
       messageTitle: message.title,
       messageContent: message.content,
-      receivers: message.receivers.map((receiver: any) => ({
+      receivers: message.receivers.map((receiver: { userId: number; user: { firstName: string; lastName: string }; isRead: boolean }) => ({
          receiverId: receiver.userId,
          receiverName: `${receiver.user.firstName} ${receiver.user.lastName}`,
          isRead: receiver.isRead,

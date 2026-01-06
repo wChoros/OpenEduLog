@@ -3,7 +3,7 @@ import './style.sass'
 
 // Define the props interface
 interface AdvancedCalendarProps {
-   onDateSelect?: (date: Date) => void
+   onDateSelect?: (_date: Date) => void
    initialDate?: Date
 }
 

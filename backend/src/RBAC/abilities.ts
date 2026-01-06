@@ -6,8 +6,6 @@ import {
    InferSubjects,
    ConditionsMatcher,
 } from '@casl/ability'
-// @ts-ignore
-import { PrismaClient } from '@prisma/client'
 
 export type Actions =
    | 'manage'

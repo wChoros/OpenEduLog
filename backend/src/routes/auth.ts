@@ -225,7 +225,7 @@ authRouter.get('/me', sessionVerify, async (req: Request, res: Response): Promis
          res.status(401).json({ message: 'User not found' })
          return
       }
-      const { password, ...userWithoutPassword } = user
+      const { password: _password, ...userWithoutPassword } = user
       res.status(200).json(userWithoutPassword)
    } catch (error) {
       res.status(500).json({ message: `Internal Server Error: ${error}` })
