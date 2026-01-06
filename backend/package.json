@@ -13,6 +13,12 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "seed": "ts-node prisma/faker.ts",
+    "db:migrate": "npx prisma migrate dev",
+    "db:seed": "npx prisma db seed",
+    "db:studio": "npx prisma studio"
+  },
+  "prisma": {
     "seed": "ts-node prisma/faker.ts"
   },
   "keywords": [],

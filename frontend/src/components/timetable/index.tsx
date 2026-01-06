@@ -112,6 +112,17 @@ function addWeeksToDateRange(dateRange: DateRange, num_of_weeks: number): DateRa
    return new DateRange(start, end)
 }
 
+function formatWeekRange(dateRange: DateRange): string {
+   const start = dateRange.startDate;
+   const end = dateRange.endDate;
+   const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+   
+   if (start.getFullYear() === end.getFullYear()) {
+      return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}, ${start.getFullYear()}`;
+   }
+   return `${start.toLocaleDateString('en-US', { ...options, year: 'numeric' })} - ${end.toLocaleDateString('en-US', { ...options, year: 'numeric' })}`;
+}
+
 const Index: React.FC = () => {
    const [timetableData, setTimetableData] = useState<TimetableItem[] | undefined>()
    const [dateRange] = useState(() => {
@@ -172,21 +183,32 @@ const Index: React.FC = () => {
       <section id="timetable">
          <h1 className="dashboardSectionTitle">Timetable</h1>
 
+         <div className="timetableHeaderActions">
+            <div className="rangeDisplay">
+               {formatWeekRange(dateRange)}
+            </div>
+            <div className="navigationControls">
+               <a href="/dashboard/student/timetable" className="todayButton">Today</a>
+               <div className="navArrows">
+                  <a
+                     href={`/dashboard/student/timetable/${addWeeksToDateRange(dateRange, -1).toString()}`}
+                     className="navButton"
+                     title="Previous Week"
+                  >
+                     <img src="/icons/arrow-left.svg" alt="previous week" />
+                  </a>
+                  <a
+                     href={`/dashboard/student/timetable/${addWeeksToDateRange(dateRange, 1).toString()}`}
+                     className="navButton"
+                     title="Next Week"
+                  >
+                     <img src="/icons/arrow-right.svg" alt="next week" />
+                  </a>
+               </div>
+            </div>
+         </div>
+
          <div className={'timetableContentContainer'}>
-            <div className="previousWeekButton">
-               <a
-                  href={`/dashboard/student/timetable/${addWeeksToDateRange(dateRange, -1).toString()}`}
-               >
-                  <img src="/icons/arrow-left.svg" alt="previous week" />
-               </a>
-            </div>
-            <div className="nextWeekButton">
-               <a
-                  href={`/dashboard/student/timetable/${addWeeksToDateRange(dateRange, 1).toString()}`}
-               >
-                  <img src="/icons/arrow-right.svg" alt="next week" />
-               </a>
-            </div>
             <div className="timetableContainer">
                <table>
                   <thead>

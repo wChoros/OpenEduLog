@@ -39,6 +39,22 @@ async function main() {
     )
   )
 
+  // Create hardcoded student user
+  const studentUser = await prisma.user.create({
+    data: {
+      firstName: 'Test',
+      lastName: 'Student',
+      email: 'student@example.com',
+      login: 'student',
+      password: await bcrypt.hash("student", 10),
+      isEmailConfirmed: true,
+      phoneNumber: faker.phone.number(),
+      birthDate: faker.date.past({ years: 20 }),
+      role: 'STUDENT',
+      addressId: addresses[0].id
+    }
+  })
+
   // Create Users
   const users = await Promise.all(
     Array.from({ length: 100 }).map(async (_, index) => {
@@ -63,6 +79,8 @@ async function main() {
     })
   )
 
+  const allUsers = [studentUser, ...users];
+
   // Create Subjects
   const subjects = await Promise.all(
     [
@@ -86,10 +104,17 @@ async function main() {
   )
 
   // Assign Students to Groups
-  const studentsOnGroups = await Promise.all(
-    groups.flatMap(group => 
-      users
-        .filter(user => user.role === 'STUDENT')
+  const studentsOnGroups = await Promise.all([
+    // Ensure hardcoded student is in Group 1
+    prisma.studentsOnGroups.create({
+      data: {
+        groupId: groups[0].id,
+        studentId: studentUser.id
+      }
+    }),
+    ...groups.flatMap(group => 
+      allUsers
+        .filter(user => user.role === 'STUDENT' && user.id !== studentUser.id)
         .slice(0, faker.number.int({ min: 10, max: 20 }))
         .map(student => 
           prisma.studentsOnGroups.create({
@@ -100,11 +125,11 @@ async function main() {
           })
         )
     )
-  )
+  ])
 
   // Create Subjects on Teachers
   const subjectsOnTeachers = await Promise.all(
-    users
+    allUsers
       .filter(user => user.role === 'TEACHER')
       .flatMap(teacher => 
         subjects
@@ -138,20 +163,24 @@ async function main() {
 
   // Create Timetable
   const timetable = await Promise.all(
-    Array.from({ length: 100 }).map(() => {
+    Array.from({ length: 150 }).map(() => {
       const subjectOnTeacher = subjectsOnTeachers[faker.number.int({ min: 0, max: subjectsOnTeachers.length - 1 })]
       const group = groups[faker.number.int({ min: 0, max: groups.length - 1 })]
       const substitutionTeacher = faker.datatype.boolean(0.05) 
-        ? users.find(u => u.role === 'TEACHER') 
+        ? allUsers.find(u => u.role === 'TEACHER') 
         : null
 
-      // Generate a random date within the current week
+      // Generate a random date around the current week
       const today = new Date()
-      const startDate = new Date(today.setDate(today.getDate() - 20))
-      const endDate = new Date(today.setDate(startDate.getDate() + 40))
+      // From 7 days ago to 14 days in the future
+      const start = new Date()
+      start.setDate(today.getDate() - 7)
+      const end = new Date()
+      end.setDate(today.getDate() + 14)
+      
       let randomDate: Date;
       do {
-        randomDate = faker.date.between({ from: startDate, to: endDate });
+        randomDate = faker.date.between({ from: start, to: end });
       } while (randomDate.getDay() === 0 || randomDate.getDay() === 6);
 
       return prisma.timetable.create({
@@ -168,8 +197,8 @@ async function main() {
   )
 
   // Create Grades
-const grades = await Promise.all(
-   users
+  const grades = await Promise.all(
+    allUsers
       .filter(user => user.role === 'STUDENT')
       .flatMap(student => 
          subjectsOnTeachers
@@ -186,12 +215,12 @@ const grades = await Promise.all(
                })
             )
       )
-)
+  )
 
   // Create Announcements
   const announcements = await Promise.all(
     Array.from({ length: 20 }).map(() => {
-      const teacher = users.find(u => u.role === 'TEACHER')
+      const teacher = allUsers.find(u => u.role === 'TEACHER')
       return prisma.announcement.create({
         data: {
           authorId: teacher!.id,
@@ -204,11 +233,18 @@ const grades = await Promise.all(
 
   // Create Messages
   const messages = await Promise.all(
-    Array.from({ length: 30 }).map(() => {
-      const author = users[faker.number.int({ min: 0, max: users.length - 1 })]
-      const receivers = users
-        .filter(u => u.id !== author.id)
-        .slice(0, faker.number.int({ min: 1, max: 3 }))
+    Array.from({ length: 50 }).map((_, index) => {
+      // Ensure first 10 messages are for our test student
+      const isForTestStudent = index < 10;
+      const author = isForTestStudent 
+        ? allUsers.find(u => u.role === 'TEACHER')! 
+        : allUsers[faker.number.int({ min: 0, max: allUsers.length - 1 })]
+      
+      const receivers = isForTestStudent 
+        ? [studentUser]
+        : allUsers
+            .filter(u => u.id !== author.id)
+            .slice(0, faker.number.int({ min: 1, max: 3 }))
 
       const message = prisma.message.create({
         data: {
