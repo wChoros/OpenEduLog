@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "AttendanceStatus" ADD VALUE 'WAITING_FOR_APPROVAL';

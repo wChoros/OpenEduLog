@@ -10,6 +10,8 @@ import groupsRouter from './routes/groups'
 import subjectsRouter from './routes/subjects'
 import timetablesRouter from './routes/timetables'
 import messagesRouter from './routes/messages'
+import attendanceRouter from './routes/attendance'
+import announcementsRouter from './routes/announcements'
 
 dotenv.config()
 
@@ -37,6 +39,8 @@ app.use('/groups', sessionVerify, groupsRouter)
 app.use('/subjects', sessionVerify, subjectsRouter)
 app.use('/timetables', sessionVerify, timetablesRouter)
 app.use('/messages', sessionVerify, messagesRouter)
+app.use('/attendance', sessionVerify, attendanceRouter)
+app.use('/announcements', sessionVerify, announcementsRouter)
 
 app.listen(PORT, () => {
    console.log(`Server is running on http://localhost:${PORT}`)

@@ -11,6 +11,7 @@ const weekDays = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATUR
 async function main() {
   // Clear existing data to avoid conflicts
   await prisma.usersOnMessages.deleteMany()
+  await prisma.attendance.deleteMany()
   await prisma.message.deleteMany()
   await prisma.announcement.deleteMany()
   await prisma.grade.deleteMany()
@@ -263,6 +264,34 @@ async function main() {
       return message
     })
   )
+
+  // Create Attendance
+  // For each record in the timetable that is in the past, create attendance for students in that group
+  const pastLessons = timetable.filter(item => new Date(item.date) < new Date());
+  
+  await Promise.all(
+    pastLessons.flatMap(async (lesson) => {
+      // Find students in this group
+      const studentsInGroup = await prisma.studentsOnGroups.findMany({
+        where: { groupId: lesson.groupId },
+        select: { studentId: true }
+      });
+
+      return Promise.all(
+        studentsInGroup.map((sig: { studentId: number }) => {
+          const status = faker.helpers.arrayElement(['PRESENT', 'PRESENT', 'PRESENT', 'ABSENT', 'LATE', 'EXCUSED']);
+          return prisma.attendance.create({
+            data: {
+              status: status as any,
+              timetableId: lesson.id,
+              studentId: sig.studentId,
+              justification: status === 'ABSENT' ? faker.helpers.arrayElement([faker.lorem.sentence(), null]) : null
+            }
+          });
+        })
+      );
+    })
+  );
 
   console.log('Seeding complete!')
 }

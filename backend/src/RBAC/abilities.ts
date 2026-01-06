@@ -6,7 +6,8 @@ import {
    InferSubjects,
    ConditionsMatcher,
 } from '@casl/ability'
-import { User } from '@prisma/client'
+// @ts-ignore
+import { PrismaClient } from '@prisma/client'
 
 export type Actions =
    | 'manage'
@@ -21,12 +22,21 @@ export type Actions =
    | 'all'
 
 export type Subjects =
-   | InferSubjects<'User' | 'Session' | 'Subject' | 'Group' | 'Grade' | 'Timetable'>
+   | InferSubjects<
+        | 'User'
+        | 'Session'
+        | 'Subject'
+        | 'Group'
+        | 'Grade'
+        | 'Timetable'
+        | 'Attendance'
+        | 'Announcement'
+     >
    | 'all'
 
 export type AppAbility = PureAbility<[Actions, Subjects]>
 
-export function defineAbilitiesFor(user: User) {
+export function defineAbilitiesFor(user: any) {
    const { can, cannot, build } = new AbilityBuilder<AppAbility>(
       PureAbility as AbilityClass<AppAbility>
    )
@@ -38,11 +48,15 @@ export function defineAbilitiesFor(user: User) {
       can('read', 'Group', { studentId: user.id })
       can('read', 'Subject')
       can('read', 'Timetable', { groupId: user.id })
+      can(['read', 'update'], 'Attendance', { studentId: user.id })
+      can('read', 'Announcement')
    } else if (user.role === 'TEACHER') {
       can('read', 'Group', { teacherId: user.id })
       can('read', 'Subject', { teacherId: user.id })
       can('read', 'Timetable', { teacherId: user.id })
       can(['add', 'update', 'delete'], 'Grade', { teacherId: user.id })
+      can('manage', 'Attendance', { teacherId: user.id })
+      can('manage', 'Announcement')
    } else {
       cannot('manage', 'all') // No access
    }
@@ -61,6 +75,7 @@ export function defineAbilitiesFor(user: User) {
          if ('groupName' in item && 'studentId' in item) return 'Group'
          if ('schedule' in item) return 'Timetable'
          if ('subjectName' in item) return 'Subject'
+         if ('status' in item && 'studentId' in item) return 'Attendance'
          return 'all'
       },
       conditionsMatcher,

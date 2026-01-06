@@ -45,6 +45,12 @@ const studentDashboardNavigation = (props: Readonly<Props>) => {
                <span>Attendance</span>
             </a>
          </div>
+         <div className={'navRecord'}>
+            <a href={'/dashboard/student/announcements'}>
+               <img src={'/icons/overview.svg'} alt={'announcements'} />
+               <span>Announcements</span>
+            </a>
+         </div>
       </nav>
    )
 }

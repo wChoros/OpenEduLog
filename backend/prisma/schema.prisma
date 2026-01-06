@@ -23,6 +23,14 @@ enum WeekDays {
   SUNDAY
 }
 
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+  WAITING_FOR_APPROVAL
+}
+
 model User {
   id               Int      @id @default(autoincrement())
   firstName        String
@@ -56,6 +64,8 @@ model User {
   UsersOnMessages UsersOnMessages[]
 
   Message Message[]
+
+  Attendance Attendance[]
 }
 
 model Address {
@@ -136,6 +146,8 @@ model Timetable {
   subjectOnTeacher    SubjectsOnTeachers @relation(fields: [subjectOnTeacherId], references: [id])
   group               Group              @relation(fields: [groupId], references: [id])
   substitutionTeacher User?              @relation(fields: [substitutionTeacherId], references: [id])
+
+  Attendance Attendance[]
 }
 
 model Announcement {
@@ -220,4 +232,18 @@ model GroupsOnSubjectsOnTeachers {
   subjectOnTeacher SubjectsOnTeachers @relation(fields: [subjectOnTeacherId], references: [id])
 
   @@id([groupId, subjectOnTeacherId])
+}
+
+model Attendance {
+  id            Int              @id @default(autoincrement())
+  status        AttendanceStatus @default(PRESENT)
+  justification String?
+  studentId     Int
+  timetableId   Int
+
+  student   User      @relation(fields: [studentId], references: [id])
+  timetable Timetable @relation(fields: [timetableId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

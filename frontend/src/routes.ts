@@ -18,6 +18,7 @@ export default [
          route(':gradeId', 'components/gradeDetails/index.tsx'),
       ]),
       route('attendance', 'pages/studentDashboard/attendance.tsx'),
+      route('announcements', 'pages/studentDashboard/allAnnouncements.tsx'),
    ]),
    route('*', 'catchall.tsx'),
 ] satisfies RouteConfig
