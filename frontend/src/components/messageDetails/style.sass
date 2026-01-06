@@ -1,49 +1,129 @@
 @use '../../../public/styles/variables'
 
-#gradeDetails
-  width: 100%
-  padding: 50px
-  display: flex
-  flex-direction: column
-  align-items: center
-  justify-content: flex-start
-  background-color: variables.$accent-light-gray
-
-  header
-    height: 50px
+#messageDetailsView
+    width: 100%
+    padding: 20px 50px
     display: flex
+    flex-direction: column
     align-items: center
-    justify-content: flex-end
-    background-color: black
+    justify-content: flex-start
+    background-color: variables.$accent-light-gray
+    min-height: 100vh
 
-    .returnButton
-      width: 40px
-      height: 40px
-      padding: 5px
-      display: flex
-      align-items: center
-      justify-content: center
-      margin-right: 20px
-      cursor: pointer
+    .headerRow
+        width: 90%
+        display: flex
+        justify-content: space-between
+        align-items: center
+        margin-bottom: 20px
 
-      a
-        width: 100%
-        height: 100%
+        h1.dashboardSectionTitle
+            margin: 0
+            font-size: 32px
+            font-weight: 600
+            color: variables.$primary-color
 
-        img
-          max-width: 100%
-          max-height: 100%
-          transition: filter 0.3s
-          filter: invert(1)
-          &:hover
-            filter: invert(0.5)
+        .backButton
+            color: variables.$primary-color
+            text-decoration: none
+            font-weight: 500
+            display: flex
+            align-items: center
+            transition: transform 0.2s
 
+            &:hover
+                transform: translateX(-4px)
 
-  .messageDetailsContainer
-    width: 90%
-    background-color: #fff
-    border-radius: 15px
-    box-shadow: variables.$strong-shadow
-    overflow: hidden
+    .statusMessage
+        padding: 40px
+        text-align: center
+        color: #666
+        font-size: 18px
+
+        &.error
+            color: variables.$error-color
+
+    .messageDetailsContainer
+        width: 90%
+        background-color: #fff
+        border-radius: 12px
+        box-shadow: variables.$strong-shadow
+        overflow: hidden
+        display: flex
+        flex-direction: column
+        padding: 40px
+
+        .messageHeader
+            border-bottom: 1px solid #eee
+            padding-bottom: 20px
+            margin-bottom: 30px
+
+            .subjectLine
+                font-size: 28px
+                font-weight: 700
+                color: #000
+                margin-bottom: 15px
+
+            .metaInfo
+                display: flex
+                justify-content: space-between
+                align-items: center
+                margin-bottom: 10px
+
+                .senderInfo
+                    font-size: 16px
+                    .label
+                        color: #888
+                        margin-right: 8px
+                    .value
+                        font-weight: 600
+
+                .dateInfo
+                    color: #888
+                    font-size: 14px
+
+            .receiverInfo
+                font-size: 14px
+                .label
+                    color: #888
+                    margin-right: 8px
+                .value
+                    color: #555
+
+        .messageBody
+            font-size: 16px
+            line-height: 1.6
+            color: #333
+            min-height: 200px
+            white-space: pre-wrap
+
+        .messageActions
+            display: flex
+            gap: 15px
+            margin-top: 40px
+            padding-top: 20px
+            border-top: 1px solid #eee
+
+            .actionButton
+                padding: 10px 25px
+                border-radius: 6px
+                font-weight: 600
+                cursor: pointer
+                transition: all 0.2s
+                border: none
+
+                &.reply
+                    background-color: variables.$primary-color
+                    color: #fff
+                    &:hover
+                        background-color: darken(variables.$primary-color, 10%)
+
+                &.delete
+                    background-color: #fff
+                    color: variables.$error-color
+                    border: 1px solid variables.$error-color
+                    &:hover
+                        background-color: variables.$error-color
+                        color: #fff
 
     

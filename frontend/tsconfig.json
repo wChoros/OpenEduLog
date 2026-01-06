@@ -8,7 +8,9 @@
       "strict": true,
       "moduleResolution": "node16",
       "skipLibCheck": true,
-      "isolatedModules": true
+      "isolatedModules": true,
+      "allowSyntheticDefaultImports": true,
+      "esModuleInterop": true
    },
    "include": ["src", "**/*.ts", "**/*.tsx"],
    "exclude": ["node_modules", "dist"]

@@ -9,6 +9,7 @@ export default [
       index('pages/studentDashboard/overview.tsx'),
       route('messages', 'pages/studentDashboard/messages.tsx', [
          index('components/bigMessageView/index.tsx'),
+         route('compose', 'components/composeMessage/index.tsx'),
          route(':messageId', 'components/messageDetails/index.tsx'),
       ]),
       route('timetable/:weekNumber?', 'pages/studentDashboard/timetable.tsx'),

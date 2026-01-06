@@ -1,0 +1,52 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: openedulog-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: openeduuser
+      POSTGRES_PASSWORD: openedupassword
+      POSTGRES_DB: open_edu_log
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: openedulog-backend
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - "2137:2137"
+    environment:
+      - DATABASE_URL=postgresql://openeduuser:openedupassword@db:5432/open_edu_log?schema=public
+      - PORT=2137
+    depends_on:
+      - db
+    command: sh -c "npx prisma migrate dev && npm run dev"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: openedulog-frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:2137
+      - VITE_FRONTEND_PORT=5173
+    depends_on:
+      - backend
+    command: npm run dev -- --host 0.0.0.0 --port 5173
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:

@@ -81,7 +81,7 @@ messagesRouter.get('/headers/received/:userId/:offset?', async (req: Request, re
 
    let offsetValue: number
    let take = 20
-   if (offset === null) {
+   if (offset === undefined) {
       offsetValue = 0
    } else {
       offsetValue = parseInt(offset)
@@ -139,7 +139,7 @@ messagesRouter.get('/headers/received/:userId/:offset?', async (req: Request, re
    })
 
    // Transform the result to match the requested format
-   const result = messages.map((msg) => ({
+   const result = messages.map((msg: any) => ({
       messageId: msg.id,
       messageTitle: msg.title,
       messageContent: msg.content.slice(0, 50),
@@ -154,12 +154,12 @@ messagesRouter.get('/headers/received/:userId/:offset?', async (req: Request, re
 })
 
 messagesRouter.get('/headers/sent/:userId/:offset?', async (req: Request, res: Response) => {
-   const { userId, offset_str } = req.params
+   const { userId, offset: offset_str } = req.params
    const user = req.body.user
 
    let offset: number
    let take = 20
-   if (offset_str === null) {
+   if (offset_str === undefined) {
       offset = 0
    } else {
       offset = parseInt(offset_str)
@@ -186,6 +186,8 @@ messagesRouter.get('/headers/sent/:userId/:offset?', async (req: Request, res: R
       select: {
          id: true,
          title: true,
+         content: true,
+         updatedAt: true,
          receivers: {
             select: {
                userId: true,
@@ -205,10 +207,12 @@ messagesRouter.get('/headers/sent/:userId/:offset?', async (req: Request, res: R
 
    // Transform the result to match the requested format
    // one message can be sent to multiple users
-   const result = messages.map((msg) => ({
+   const result = messages.map((msg: any) => ({
       messageId: msg.id,
       messageTitle: msg.title,
-      receivers: msg.receivers.map((receiver) => ({
+      messageContent: msg.content.slice(0, 50),
+      date: msg.updatedAt,
+      receivers: msg.receivers.map((receiver: any) => ({
          receiverId: receiver.userId,
          receiverName: `${receiver.user.firstName} ${receiver.user.lastName}`,
          isRead: receiver.isRead,
@@ -293,7 +297,7 @@ messagesRouter.get('/content/received/:messageId/', async (req: Request, res: Re
       date: message.updatedAt,
       senderId: message.author.id,
       senderName: `${message.author.firstName} ${message.author.lastName}`,
-      receivers: message.receivers.map((receiver) => ({
+      receivers: message.receivers.map((receiver: any) => ({
          id: receiver.user.id,
          name: `${receiver.user.firstName} ${receiver.user.lastName}`,
          isRead: receiver.isRead,
@@ -346,7 +350,7 @@ messagesRouter.get('/content/sent/:messageId', async (req: Request, res: Respons
       messageId: message.id,
       messageTitle: message.title,
       messageContent: message.content,
-      receivers: message.receivers.map((receiver) => ({
+      receivers: message.receivers.map((receiver: any) => ({
          receiverId: receiver.userId,
          receiverName: `${receiver.user.firstName} ${receiver.user.lastName}`,
          isRead: receiver.isRead,
@@ -419,6 +423,34 @@ messagesRouter.delete('/:messageId', async (req: Request, res: Response) => {
    })
 
    res.status(204).json({ message: 'Message deleted' })
+})
+
+messagesRouter.get('/search', async (req: Request, res: Response) => {
+   const { query } = req.query
+
+   if (!query || typeof query !== 'string') {
+      res.status(400).json({ message: 'Missing query parameter' })
+      return
+   }
+
+   const users = await prisma.user.findMany({
+      where: {
+         OR: [
+            { firstName: { contains: query, mode: 'insensitive' } },
+            { lastName: { contains: query, mode: 'insensitive' } },
+            { email: { contains: query, mode: 'insensitive' } },
+         ],
+      },
+      select: {
+         id: true,
+         firstName: true,
+         lastName: true,
+         role: true,
+      },
+      take: 10,
+   })
+
+   res.json(users)
 })
 
 export default messagesRouter

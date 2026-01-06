@@ -1,77 +1,134 @@
 @use '../../../public/styles/variables'
 
+*
+    box-sizing: border-box
+
 #bigMessageView
     width: 100%
-    padding: 50px
+    padding: 20px 50px
     display: flex
     flex-direction: column
     align-items: center
     justify-content: flex-start
     background-color: variables.$accent-light-gray
+    min-height: 100vh
 
-    h1.dashboardSectionTitle
-        width: 100%
-        margin: 0
-        padding-bottom: 20px
-        font-size: 40px
-        font-weight: normal
-        text-align: left
+    .headerRow
+        width: 90%
+        display: flex
+        justify-content: space-between
+        align-items: center
+        margin-bottom: 20px
+
+        h1.dashboardSectionTitle
+            margin: 0
+            font-size: 32px
+            font-weight: 600
+            color: variables.$primary-color
+
+        .composeButton
+            background-color: variables.$primary-color
+            color: #fff
+            padding: 10px 20px
+            border-radius: 8px
+            text-decoration: none
+            font-weight: 500
+            transition: transform 0.2s, background-color 0.2s
+            box-shadow: variables.$soft-shadow
+
+            &:hover
+                background-color: darken(variables.$primary-color, 10%)
+                transform: translateY(-2px)
 
     .messageContainer
-        width: 80%
         width: 90%
         background-color: #fff
-        border-radius: 15px
+        border-radius: 12px
         box-shadow: variables.$strong-shadow
         overflow: hidden
         display: flex
         flex-direction: column
 
-        .navigation
-            button.hidden
-                display: none
+        .statusMessage
+            padding: 40px
+            text-align: center
+            color: #666
+            font-size: 18px
 
-        .messageRecord:nth-child(2n)
-            background-color: variables.$accent-light-gray
+            &.error
+                color: variables.$error-color
+            
+            &.noMessages
+                font-style: italic
 
         .messageRecord
             width: 100%
-            height: 70px
-            display: flex
+            border-bottom: 1px solid #eee
+            transition: background-color 0.2s
+
+            &:last-child
+                border-bottom: none
+
+            &:hover
+                background-color: #f9f9f9
 
             &.unread
-                font-weight: bolder
+                background-color: #f0f7ff // Light blue for unread
+                font-weight: 600
+                
+                .messageAuthor, .messageTitle
+                    color: #000
 
             &.read
-                font-weight: light
+                background-color: #fff
+                color: #555
 
             a
                 width: 100%
-                height: 70px
+                padding: 15px 20px
                 display: flex
+                align-items: center
                 text-decoration: none
-                color: #000
+                color: inherit
 
                 .messageAuthor
-                    width: 15%
-                    display: flex
-                    align-items: center
-                    justify-content: center
+                    width: 160px
+                    min-width: 160px
+                    flex-shrink: 0
+                    font-size: 16px
+                    white-space: nowrap
+                    overflow: hidden
+                    text-overflow: ellipsis
+                    margin-right: 20px
 
-                .messageContent
-                    width: 75%
+                .messageContentWrapper
+                    flex: 1
                     display: flex
-                    align-items: center
-                    justify-content: center
+                    flex-direction: column
+                    padding: 0 20px
+                    overflow: hidden
 
                     .messageTitle
-                        font-weight: bold
+                        font-size: 16px
+                        margin-bottom: 4px
+                        white-space: nowrap
+                        overflow: hidden
+                        text-overflow: ellipsis
 
-                    .messageContent
-                        font-weight: lighter
+                    .messageActualContent
+                        font-size: 14px
+                        color: #666
+                        white-space: nowrap
+                        overflow: hidden
+                        text-overflow: ellipsis
+                        font-weight: normal
 
                 .messageDate
-                    width: 10%
-                    display: flex
-                    align-items: center
-                    justify-content: center
+                    width: 120px
+                    min-width: 120px
+                    flex-shrink: 0
+                    font-size: 14px
+                    text-align: right
+                    color: #888
+                    white-space: nowrap
+                    margin-left: 20px
