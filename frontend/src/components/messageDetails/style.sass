@@ -1,0 +1,49 @@
+@use '../../../public/styles/variables'
+
+#gradeDetails
+  width: 100%
+  padding: 50px
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: flex-start
+  background-color: variables.$accent-light-gray
+
+  header
+    height: 50px
+    display: flex
+    align-items: center
+    justify-content: flex-end
+    background-color: black
+
+    .returnButton
+      width: 40px
+      height: 40px
+      padding: 5px
+      display: flex
+      align-items: center
+      justify-content: center
+      margin-right: 20px
+      cursor: pointer
+
+      a
+        width: 100%
+        height: 100%
+
+        img
+          max-width: 100%
+          max-height: 100%
+          transition: filter 0.3s
+          filter: invert(1)
+          &:hover
+            filter: invert(0.5)
+
+
+  .messageDetailsContainer
+    width: 90%
+    background-color: #fff
+    border-radius: 15px
+    box-shadow: variables.$strong-shadow
+    overflow: hidden
+
+    

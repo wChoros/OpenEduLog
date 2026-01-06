@@ -1,0 +1,81 @@
+@use '../../../public/styles/variables.sass'
+
+#studentDashboardNavigation
+  position: sticky
+  top: 0
+  left: 0
+  margin: 0
+  min-width: 300px
+  width: 15%
+  min-height: 100vh
+  height: 100%
+  display: flex
+  flex-direction: column
+  align-items: center
+  box-shadow: variables.$strong-shadow
+  z-index: 100
+
+  #studentDashboardHeader
+    width: 100%
+    height: auto
+    display: flex
+    align-items: center
+    justify-content: space-evenly
+    flex-direction: column
+    text-align: center
+    border-bottom: 1px solid black
+
+    img
+      width: 90%
+      max-height: 50%
+      margin-bottom: 20px
+
+    h2
+      font-weight: normal
+      font-size: 35px
+      margin: 0
+      color: variables.$accent-deep-orange
+
+    h3
+      font-size: 25px
+      margin: 0
+      font-weight: lighter
+      color: black
+
+    h4
+      font-weight: lighter
+      font-size: 15px
+      color: variables.$accent-dark-gray
+
+  .navRecord:not(:last-child)
+    border-bottom: 1px solid black
+
+  .navRecord
+    width: 100%
+    height: 80px
+    display: flex
+    font-weight: lighter
+    font-family: variables.$main-font
+
+    a
+      text-decoration: none
+      align-items: center
+      justify-content: flex-start
+      width: 100%
+      height: 100%
+      display: flex
+      color: black
+      transition: 0.3s
+
+      &:hover
+        color: variables.$accent-deep-orange
+        background-color: variables.$accent-light-gray
+
+      img
+        max-width: 50%
+        max-height: 50%
+        margin-left: 20px
+
+      span
+        font-size: 17px
+        margin-left: 20px

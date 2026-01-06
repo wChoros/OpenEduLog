@@ -1,0 +1,223 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Roles {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum WeekDays {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model User {
+  id               Int      @id @default(autoincrement())
+  firstName        String
+  lastName         String
+  email            String   @unique
+  login            String   @unique
+  password         String
+  isEmailConfirmed Boolean  @default(false)
+  phoneNumber      String?
+  birthDate        DateTime
+  addressId        Int
+  role             Roles
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Session Session[]
+
+  StudentsOnGroups StudentsOnGroups[]
+
+  SubjectsOnTeachers SubjectsOnTeachers[]
+
+  Grade Grade[]
+
+  Address Address @relation(fields: [addressId], references: [id])
+
+  Timetable Timetable[]
+
+  Announcement Announcement[]
+
+  UsersOnMessages UsersOnMessages[]
+
+  Message Message[]
+}
+
+model Address {
+  id      Int    @id @default(autoincrement())
+  street  String
+  house   String
+  city    String
+  zip     String
+  country String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User User[]
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  token     String
+  expiredAt DateTime
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Subject {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  SubjectsOnTeachers SubjectsOnTeachers[]
+}
+
+model Group {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  StudentsOnGroups StudentsOnGroups[]
+
+  GroupsOnSubjectsOnTeachers GroupsOnSubjectsOnTeachers[]
+  Timetable                  Timetable[]
+}
+
+model Grade {
+  id                 Int     @id @default(autoincrement())
+  value              Float
+  description        String?
+  weight             Int     @default(1)
+  studentId          Int
+  subjectOnTeacherId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student          User               @relation(fields: [studentId], references: [id])
+  subjectOnTeacher SubjectsOnTeachers @relation(fields: [subjectOnTeacherId], references: [id])
+}
+
+model Timetable {
+  id                    Int      @id @default(autoincrement())
+  date                  DateTime
+  lessonNumber          Int
+  subjectOnTeacherId    Int
+  groupId               Int
+  substitutionTeacherId Int?
+  isCanceled            Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subjectOnTeacher    SubjectsOnTeachers @relation(fields: [subjectOnTeacherId], references: [id])
+  group               Group              @relation(fields: [groupId], references: [id])
+  substitutionTeacher User?              @relation(fields: [substitutionTeacherId], references: [id])
+}
+
+model Announcement {
+  id       Int    @id @default(autoincrement())
+  authorId Int
+  title    String
+  content  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [authorId], references: [id])
+}
+
+model Message {
+  id        Int               @id @default(autoincrement())
+  authorId  Int
+  title     String
+  content   String
+  receivers UsersOnMessages[]
+
+  // Add this relation field
+  author User @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UsersOnMessages {
+  userId    Int
+  messageId Int
+  isRead    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id])
+  message Message @relation(fields: [messageId], references: [id])
+
+  @@id([userId, messageId])
+}
+
+model SubjectsOnTeachers {
+  id        Int @id @default(autoincrement())
+  subjectId Int
+  teacherId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subject Subject @relation(fields: [subjectId], references: [id])
+  teacher User    @relation(fields: [teacherId], references: [id])
+
+  Grade Grade[]
+
+  Timetable Timetable[]
+
+  GroupsOnSubjectsOnTeachers GroupsOnSubjectsOnTeachers[]
+}
+
+model StudentsOnGroups {
+  groupId   Int
+  studentId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  group   Group @relation(fields: [groupId], references: [id])
+  student User  @relation(fields: [studentId], references: [id])
+
+  @@id([groupId, studentId])
+}
+
+model GroupsOnSubjectsOnTeachers {
+  groupId            Int
+  subjectOnTeacherId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  group            Group              @relation(fields: [groupId], references: [id])
+  subjectOnTeacher SubjectsOnTeachers @relation(fields: [subjectOnTeacherId], references: [id])
+
+  @@id([groupId, subjectOnTeacherId])
+}

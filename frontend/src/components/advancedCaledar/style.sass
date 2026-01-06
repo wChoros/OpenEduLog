@@ -1,0 +1,117 @@
+@use '../../../public/styles/variables.sass' as variables
+
+#advancedCalendar
+  width: 350px
+  height: 600px
+  padding: 15px // Adjusted from 20px for smaller size
+  display: flex
+  flex-direction: column
+  margin-bottom: 50px // Adjusted for smaller size
+  // align-items: center // Removed to allow full-width internal elements
+  border-radius: 10px
+  background-color: white
+  box-shadow: variables.$strong-shadow // Use your SASS variable
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif
+  box-sizing: border-box
+    overflow: hidden 
+
+  .calendar-header
+    display: flex
+    justify-content: space-between
+    align-items: center
+    width: 100%
+    margin-bottom: 10px
+
+    h2
+      font-size: 22px // Adjusted from 40px
+      text-align: center
+      margin: 0
+      font-weight: 600
+      color: variables.$accent-dark-gray // Assuming you have a dark gray or similar
+
+    button
+      width: auto // Auto width for < > buttons
+      padding: 6px 10px // Adjusted
+      border-radius: 5px
+      background-color: variables.$accent-deep-orange // Use your SASS variable
+      border: 1px solid variables.$accent-dark-gray   // Use your SASS variable
+      color: #fff
+      cursor: pointer
+      font-size: 18px
+      font-weight: bold
+      line-height: 1
+      box-sizing: border-box
+      &:hover
+        background-color: variables.$accent-light-orange // Use your SASS variable
+        color: variables.$accent-dark-gray           // Use your SASS variable
+      &:focus
+        outline: none
+        border-color: variables.$accent-light-orange // Use your SASS variable
+        box-shadow: 0 0 0 2px rgba(variables.$accent-light-orange, 0.5) // Focus ring matching light orange
+
+  .calendar-weekdays
+    display: grid
+    grid-template-columns: repeat(7, 1fr)
+    width: 100%
+    margin-bottom: 5px
+    box-sizing: border-box
+
+    .weekday-cell
+      padding: 6px 4px // Adjusted
+      text-align: center
+      font-size: 10px
+      font-weight: 500
+      color: variables.$accent-dark-gray // Or a suitable text color from your variables
+      box-sizing: border-box
+
+  .calendar-days
+    display: grid
+    grid-template-columns: repeat(7, 1fr)
+    gap: 3px // Spacing between day cells
+    width: 100%
+    flex-grow: 1 // Allows the grid to fill the remaining space
+    box-sizing: border-box
+
+    .day-cell
+      display: flex
+      justify-content: center
+      align-items: center
+      // padding: 5px // Dynamic padding via aspect ratio or fixed height
+      border-radius: 5px
+      box-sizing: border-box
+      font-size: 11px // Adjusted
+      border: 1px solid transparent // Placeholder for consistent sizing, border on interaction
+      cursor: pointer
+      aspect-ratio: 1 / 1 // Makes cells square, adjust if needed
+
+      &:hover
+        background-color: lighten(variables.$accent-light-orange, 15%) // Lighter hover
+        border-color: variables.$accent-light-orange
+
+      &.other-month
+        color: variables.$accent-gray // Use your SASS variable
+        cursor: default
+        pointer-events: none // Make non-clickable
+        opacity: 0.0 // Makes the cell semi-transparent
+        background-color: #f7f7f7 // Slightly different background for non-current month days
+        &:hover
+          background-color: #f7f7f7 // No hover effect
+          border-color: transparent
+
+      &.today
+        background-color: variables.$accent-light-orange // Use your SASS variable
+        color: variables.$accent-dark-gray // Use your SASS variable
+        font-weight: bold
+        border: 1px solid darken(variables.$accent-light-orange, 10%)
+
+      &.selected
+        background-color: variables.$accent-deep-orange // Use your SASS variable
+        color: #fff
+        font-weight: bold
+        border: 1px solid darken(variables.$accent-deep-orange, 10%)
+        box-shadow: 0 0 5px rgba(variables.$accent-deep-orange, 0.5)
+
+      &:focus // For accessibility on keyboard navigation if implemented further
+        outline: none
+        border-color: variables.$accent-light-orange
+        box-shadow: 0 0 0 2px rgba(variables.$accent-light-orange, 0.5)

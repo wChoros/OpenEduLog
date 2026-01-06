@@ -1,0 +1,69 @@
+// Ensure this path correctly points to your variables.sass file
+@use '../../../public/styles/variables.sass' as variables
+
+// Define the spinning animation
+@keyframes spin
+  0%
+    transform: rotate(0deg)
+  100%
+    transform: rotate(360deg)
+
+#spinningLogoContainer
+  display: flex
+  justify-content: center
+  align-items: center
+  width: 400px // Matches other components
+  height: 400px // Matches other components
+  padding: 15px
+  box-sizing: border-box
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif
+
+.logo-card
+  width: 100%
+  max-width: 300px // Card size
+  min-height: 300px // Card min height
+  padding: 25px
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: center
+  border-radius: 10px
+  background-color: white
+  box-shadow: variables.$strong-shadow // Use your SASS variable
+  text-align: center
+  box-sizing: border-box
+
+  h2
+    font-size: 26px
+    color: variables.$accent-dark-gray // Use your SASS variable
+    margin-top: 0
+    margin-bottom: 20px
+    font-weight: 600
+
+  .logo-wrapper
+    width: 150px // Size of the spinning logo area
+    height: 150px
+    margin-bottom: 20px
+    display: flex
+    justify-content: center
+    align-items: center
+
+  .school-logo
+    width: 100% // SVG takes full width of its wrapper
+    height: 100% // SVG takes full height of its wrapper
+    animation: spin 4s linear infinite // Apply the spin animation
+    color: variables.$accent-deep-orange // Main color for the SVG (circle stroke)
+
+    // If you use an <img> tag instead of SVG, apply animation to it directly:
+    // & img
+    //   width: 100%
+    //   height: 100%
+    //   object-fit: contain
+    //   animation: spin 4s linear infinite
+
+  .logo-caption
+    font-size: 16px
+    color: lighten(variables.$accent-dark-gray, 15%) // Use your SASS variable
+    margin-top: 0
+    margin-bottom: 0
+    font-style: italic

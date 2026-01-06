@@ -1,0 +1,71 @@
+@import '../../../public/styles/variables.sass'
+
+#luckyNumberDisplayContainer
+    display: flex
+    justify-content: center
+    align-items: center
+    width: 400px // Matches calendar width
+    height: 400px // Matches calendar height
+    padding: 15px
+    box-sizing: border-box
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif
+
+.lucky-number-card
+    width: 100%
+    max-width: 300px // Card itself can be smaller within the container
+    min-height: 200px // Minimum height for the card content
+    padding: 25px
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    border-radius: 10px
+    background-color: white
+    box-shadow: $strong-shadow // Use your SASS variable
+    text-align: center
+    box-sizing: border-box
+
+    h2
+        font-size: 28px // Adjusted for context
+        color: $accent-dark-gray // Assuming a dark gray for text
+        margin-top: 0
+        margin-bottom: 20px
+        font-weight: 600
+
+    .lucky-number
+        font-size: 72px // Large display for the number
+        font-weight: bold
+        color: $accent-deep-orange // Use a prominent color
+        margin-top: 10px
+        margin-bottom: 25px
+        line-height: 1
+
+    .loading-number
+        font-size: 24px
+        color: $accent-gray
+        margin-top: 10px
+        margin-bottom: 25px
+
+    button
+        width: 60% // Relative width for the button
+        min-width: 150px // Minimum width
+        padding: 12px 20px // Generous padding
+        border-radius: 5px
+        background-color: $accent-deep-orange // Use your SASS variable
+        border: 1px solid darken($accent-deep-orange, 10%) // Darker border for depth
+        color: #fff
+        cursor: pointer
+        font-size: 16px
+        font-weight: 500
+        box-sizing: border-box
+        transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out
+
+        &:hover
+            background-color: $accent-light-orange // Use your SASS variable
+            color: $accent-dark-gray // Use your SASS variable
+            border-color: darken($accent-light-orange, 5%)
+
+        &:focus
+            outline: none
+            border-color: $accent-light-orange
+            box-shadow: 0 0 0 3px rgba($accent-light-orange, 0.4) // Focus ring

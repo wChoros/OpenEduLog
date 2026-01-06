@@ -1,0 +1,77 @@
+@use '../../../public/styles/variables'
+
+#bigMessageView
+    width: 100%
+    padding: 50px
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: flex-start
+    background-color: variables.$accent-light-gray
+
+    h1.dashboardSectionTitle
+        width: 100%
+        margin: 0
+        padding-bottom: 20px
+        font-size: 40px
+        font-weight: normal
+        text-align: left
+
+    .messageContainer
+        width: 80%
+        width: 90%
+        background-color: #fff
+        border-radius: 15px
+        box-shadow: variables.$strong-shadow
+        overflow: hidden
+        display: flex
+        flex-direction: column
+
+        .navigation
+            button.hidden
+                display: none
+
+        .messageRecord:nth-child(2n)
+            background-color: variables.$accent-light-gray
+
+        .messageRecord
+            width: 100%
+            height: 70px
+            display: flex
+
+            &.unread
+                font-weight: bolder
+
+            &.read
+                font-weight: light
+
+            a
+                width: 100%
+                height: 70px
+                display: flex
+                text-decoration: none
+                color: #000
+
+                .messageAuthor
+                    width: 15%
+                    display: flex
+                    align-items: center
+                    justify-content: center
+
+                .messageContent
+                    width: 75%
+                    display: flex
+                    align-items: center
+                    justify-content: center
+
+                    .messageTitle
+                        font-weight: bold
+
+                    .messageContent
+                        font-weight: lighter
+
+                .messageDate
+                    width: 10%
+                    display: flex
+                    align-items: center
+                    justify-content: center

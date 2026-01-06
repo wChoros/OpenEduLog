@@ -1,0 +1,51 @@
+@use '../../../public/styles/variables.sass'
+
+#loginForm
+  margin-top: 100px
+  margin-bottom: 100px
+  width: 500px
+  min-height: 600px
+  padding: 20px
+  display: flex
+  flex-wrap: wrap
+  flex-direction: column
+  justify-content: space-around
+  align-items: center
+  border-radius: 10px
+  background-color: white
+  box-shadow:  variables.$strong-shadow
+  h2
+    font-size: 40px
+    text-align: center
+    margin-bottom: 20px
+  input
+    width: 90%
+    padding: 10px
+    margin-bottom: 10px
+    border: 1px solid variables.$accent-gray
+    border-radius: 5px
+    box-sizing: border-box
+    &:focus
+      outline: none
+      border-color: variables.$accent-light-orange
+  button
+    width: 45%
+    padding: 10px
+    border-radius: 5px
+    background-color: variables.$accent-deep-orange
+    border: 1px solid variables.$accent-dark-gray
+    color: #fff
+    cursor: pointer
+    box-sizing: border-box
+    &:hover
+      background-color: variables.$accent-light-orange
+      color: variables.$accent-dark-gray
+  p.error-message
+    color: red
+    height: 50px
+    font-size: 15px
+    text-align: center
+    margin: 0
+    width: 100%
+    padding: 10px
+    border-radius: 5px

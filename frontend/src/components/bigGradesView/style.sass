@@ -1,0 +1,113 @@
+@use '../../../public/styles/variables'
+
+#bigGradesView
+  width: 100%
+  padding: 50px
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: flex-start
+  background-color: variables.$accent-light-gray
+
+  h1.dashboardSectionTitle
+    width: 100%
+    margin: 0
+    padding-bottom: 20px
+    font-size: 40px
+    font-weight: normal
+    text-align: left
+
+  .gradesContainer
+    width: 90%
+    background-color: #fff
+    border-radius: 15px
+    box-shadow: variables.$strong-shadow
+    overflow: hidden
+
+    table
+      width: 100%
+      border-collapse: collapse
+      border-radius: 15px
+
+      thead
+        tr
+          background-color: #000
+          color: #fff
+          height: 50px
+
+          th
+            font-size: 20px
+            font-weight: lighter
+
+            &:nth-of-type(2)
+              justify-content: center
+
+      tbody
+        width: 100%
+
+        tr
+          height: auto
+
+          td
+            border-bottom: 1px solid variables.$accent-light-gray
+            text-align: center
+            font-weight: lighter
+            min-height: 100px
+
+
+            &:nth-of-type(1)
+              width: 15%
+
+
+            &:nth-of-type(2)
+              display: flex
+              flex-wrap: wrap
+              justify-content: flex-start
+              align-items: center
+              width: 100%
+              font-weight: normal
+
+            &:nth-of-type(3)
+              width: 20%
+
+            .grade
+              width: 25px
+              height: 25px
+              margin: 5px
+              border-radius: 50%
+              a
+                display: flex
+                align-items: center
+                justify-content: center
+                width: 100%
+                height: 100%
+                text-decoration: none
+                border-radius: 50%
+                color: black
+                transition: 0.3s
+                &:hover
+                  color: white
+                  background-color: black
+
+              &.a
+                background-color: #bc84f3
+
+              &.b
+                background-color: lightgreen
+
+              &.c
+                background-color: lightblue
+
+              &.d
+                background-color: lightcoral
+
+              &.e
+                background-color: yellow
+
+              &.f
+                background-color: #ff2b2b
+
+              &.s
+                background-color: #555
+
+

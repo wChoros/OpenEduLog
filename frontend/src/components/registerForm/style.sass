@@ -1,0 +1,65 @@
+@use '../../../public/styles/variables.sass'
+
+#registerForm
+  margin-top: 50px
+  margin-bottom: 50px
+  width: 600px
+  min-height: 800px
+  padding: 30px
+  display: flex
+  flex-wrap: wrap
+  justify-content: space-between
+  align-items: center
+  border-radius: 10px
+  background-color: white
+  box-shadow:  variables.$strong-shadow
+  h2
+    font-size: 40px
+    text-align: center
+    margin-bottom: 30px
+    width: 100%
+  input
+    width: 48%
+    padding: 12px
+    margin-bottom: 20px
+    border: 1px solid variables.$accent-gray
+    border-radius: 5px
+    box-sizing: border-box
+    &:focus
+      outline: none
+      border-color: variables.$accent-light-orange
+  button
+    width: 100%
+    padding: 15px
+    margin-top: 20px
+    border-radius: 5px
+    background-color: variables.$accent-deep-orange
+    border: 1px solid variables.$accent-dark-gray
+    color: #fff
+    font-size: 18px
+    font-weight: bold
+    cursor: pointer
+    box-sizing: border-box
+    &:hover
+      background-color: variables.$accent-light-orange
+      color: variables.$accent-dark-gray
+  p.error-message
+    color: red
+    min-height: 20px
+    font-size: 14px
+    text-align: center
+    margin: 10px 0
+    width: 100%
+    padding: 10px
+    background-color: #ffeaea
+    border-radius: 5px
+  p.success-message
+    color: green
+    min-height: 20px
+    font-size: 14px
+    text-align: center
+    margin: 10px 0
+    width: 100%
+    padding: 10px
+    background-color: #eaffea
+    border-radius: 5px

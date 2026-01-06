@@ -1,0 +1,129 @@
+@use '../../../public/styles/variables'
+
+#timetable
+  width: 100%
+  padding: 50px
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: flex-start
+  background-color: variables.$accent-light-gray
+
+  h1.dashboardSectionTitle
+    width: 100%
+    margin: 0
+    padding-bottom: 20px
+    font-size: 40px
+    font-weight: normal
+    text-align: left
+
+  div.timetableContentContainer
+    width: 100%
+    display: flex
+    flex-direction: row
+
+    div.previousWeekButton
+      order: 1
+      margin-right: 20px
+
+    div.nextWeekButton
+      order: 3
+      margin-left: 20px
+
+    div.previousWeekButton, div.nextWeekButton
+      display: flex
+      justify-content: center
+      align-items: center
+      width: 50px
+      height: 50px
+
+      a
+        width: 100%
+        height: 100%
+        display: flex
+        justify-content: center
+        align-items: center
+        transition-duration: 0.3s
+        border-radius: 50%
+        background-color: black
+
+        &:hover
+          background-color: variables.$accent-light-gray
+
+          img
+            filter: invert(0)
+
+        img
+          max-width: 100%
+          max-height: 100%
+          transition: filter 0.3s
+          filter: invert(1)
+
+
+    .timetableContainer
+      order: 2
+      width: 90%
+      background-color: #fff
+      border-radius: 15px
+      box-shadow: variables.$strong-shadow
+      overflow: hidden
+
+      table
+        width: 100%
+        border-collapse: collapse
+        border-radius: 15px
+
+        thead
+          tr
+            background-color: #000
+            color: #fff
+            height: 50px
+
+            th
+              font-size: 20px
+              font-weight: lighter
+
+              &:nth-of-type(2)
+                justify-content: center
+
+        tbody
+          width: 100%
+
+          tr
+            height: 100px
+
+            &:nth-of-type(even)
+              background-color: variables.$accent-light-gray
+
+            td
+              width: calc((100% / 6) - 1%)
+              min-height: 100px
+              text-align: center
+              padding: 0
+
+
+              &:nth-of-type(1)
+                width: 6%
+
+              span
+                margin: 0
+                padding: 0
+
+              .subjectName
+                font-size: 17px
+                font-weight: bold
+
+              .teacherName
+                margin-top: 5px
+                font-size: 15px
+                font-weight: lighter
+
+              .substitution
+                color: variables.$accent-light-orange
+            td.canceled span
+              text-decoration: line-through
+              color: red
+              &.subjectName
+                font-weight: normal
+              &.teacherName
+                font-weight: lighter
