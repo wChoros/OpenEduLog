@@ -1,14 +1,21 @@
-name: Build
+name: Frontend Build
 on:
   push:
     branches:
       - main
+    paths:
+      - 'frontend/**'
   pull_request:
     types: [opened, synchronize, reopened]
+    paths:
+      - 'frontend/**'
 jobs:
   sonarqube:
     name: Build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
         with:
@@ -17,6 +24,8 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v4
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: frontend
       - name: Install dependencies
         run: npm install
       - name: Lint
