@@ -1,11 +1,10 @@
-import AttendanceGrid from '../../components/attendanceGrid'
-// @ts-ignore
-import './dashboardPages.sass'
+import DashboardPage from '../../components/dashboardPage/index.js'
+import AttendanceGrid from '../../components/attendanceGrid/index.js'
 
 export default function Page() {
    return (
-      <div className="dashboard-page-wrapper">
+      <DashboardPage>
          <AttendanceGrid />
-      </div>
+      </DashboardPage>
    )
 }

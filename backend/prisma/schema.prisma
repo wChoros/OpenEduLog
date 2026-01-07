@@ -139,6 +139,7 @@ model Timetable {
   groupId               Int
   substitutionTeacherId Int?
   isCanceled            Boolean  @default(false)
+  isCompleted           Boolean  @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -1,11 +1,10 @@
-import AnnouncementsList from '../../components/announcementsList'
-// @ts-ignore
-import './dashboardPages.sass'
+import DashboardPage from '../../components/dashboardPage/index.js'
+import AnnouncementsList from '../../components/announcementsList/index.js'
 
 export default function Page() {
    return (
-      <div className="dashboard-page-wrapper">
+      <DashboardPage>
          <AnnouncementsList />
-      </div>
+      </DashboardPage>
    )
 }

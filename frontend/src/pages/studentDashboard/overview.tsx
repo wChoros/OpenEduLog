@@ -1,11 +1,10 @@
-import StudentOverview from '../../components/studentOverview'
-// @ts-ignore
-import './dashboardPages.sass'
+import DashboardPage from '../../components/dashboardPage/index.js'
+import StudentOverview from '../../components/studentOverview/index.js'
 
 export default function Page() {
    return (
-      <div className="dashboard-page-wrapper">
+      <DashboardPage>
          <StudentOverview />
-      </div>
+      </DashboardPage>
    )
 }

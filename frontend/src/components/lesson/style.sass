@@ -1,0 +1,89 @@
+@use '../../../public/styles/variables'
+
+.lesson-container
+  width: 100%
+  max-width: 1200px
+  display: flex
+  flex-direction: column
+  gap: 32px
+  padding: 30px
+
+.lesson-header
+  margin-bottom: 32px
+  
+  h1
+    font-size: 36px
+    font-weight: 800
+    color: #1E293B
+    margin: 0
+  p
+    font-size: 18px
+    color: #64748B
+    margin-top: 8px
+
+  .completed-badge
+    display: inline-block
+    margin-top: 12px
+    padding: 6px 16px
+    background: #10B981
+    color: #fff
+    border-radius: 8px
+    font-size: 14px
+    font-weight: 600
+
+.lesson-actions
+  display: flex
+  gap: 20px
+  flex-wrap: wrap
+
+  .lesson-btn
+    display: flex
+    align-items: center
+    gap: 12px
+    padding: 14px 24px
+    border-radius: 16px
+    font-weight: 700
+    cursor: pointer
+    border: none
+    font-family: inherit
+    transition: transform 0.2s, box-shadow 0.2s
+    text-decoration: none
+    
+    img
+      width: 20px
+      height: 20px
+      filter: brightness(0) invert(1)
+
+    &:hover:not(:disabled)
+      transform: translateY(-2px)
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1)
+
+    &:disabled
+      opacity: 0.5
+      cursor: not-allowed
+      transform: none
+
+    &.attendance
+      background: variables.$accent-deep-orange
+      color: #fff
+    
+    &.grades
+      background: #10B981 // Green-500
+      color: #fff
+
+    &.save
+      background: #3B82F6 // Blue-500
+      color: #fff
+
+.lesson-details-placeholder
+  .glass-card
+    background: #fff
+    padding: 30px
+    border-radius: 24px
+    border: 1px solid #F1F5F9
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05)
+    
+    h3
+      margin: 0 0 20px
+      font-size: 20px
+      color: #334155

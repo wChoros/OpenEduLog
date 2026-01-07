@@ -56,6 +56,22 @@ async function main() {
     }
   })
 
+  // Create hardcoded teacher user
+  const teacherUser = await prisma.user.create({
+    data: {
+      firstName: 'Pro',
+      lastName: 'Professor',
+      email: 'teacher@example.com',
+      login: 'teacher',
+      password: await bcrypt.hash("teacher", 10),
+      isEmailConfirmed: true,
+      phoneNumber: faker.phone.number(),
+      birthDate: faker.date.past({ years: 40 }),
+      role: 'TEACHER',
+      addressId: addresses[1].id
+    }
+  })
+
   // Create Users
   const users = await Promise.all(
     Array.from({ length: 100 }).map(async (_, index) => {
@@ -80,7 +96,7 @@ async function main() {
     })
   )
 
-  const allUsers = [studentUser, ...users];
+  const allUsers = [studentUser, teacherUser, ...users];
 
   // Create Subjects
   const subjects = await Promise.all(
@@ -129,9 +145,18 @@ async function main() {
   ])
 
   // Create Subjects on Teachers
-  const subjectsOnTeachers = await Promise.all(
-    allUsers
-      .filter(user => user.role === 'TEACHER')
+  const subjectsOnTeachers = await Promise.all([
+    // Ensure hardcoded teacher has subjects
+    ...subjects.slice(0, 3).map(subject => 
+      prisma.subjectsOnTeachers.create({
+        data: {
+          subjectId: subject.id,
+          teacherId: teacherUser.id
+        }
+      })
+    ),
+    ...allUsers
+      .filter(user => user.role === 'TEACHER' && user.id !== teacherUser.id)
       .flatMap(teacher => 
         subjects
           .slice(0, faker.number.int({ min: 1, max: 3 }))
@@ -144,7 +169,7 @@ async function main() {
             })
           )
       )
-  )
+  ])
 
   // Link Groups to Subjects on Teachers
   const groupsOnSubjectsOnTeachers = await Promise.all(
@@ -162,40 +187,102 @@ async function main() {
     )
   )
 
-  // Create Timetable
-  const timetable = await Promise.all(
-    Array.from({ length: 150 }).map(() => {
-      const subjectOnTeacher = subjectsOnTeachers[faker.number.int({ min: 0, max: subjectsOnTeachers.length - 1 })]
-      const group = groups[faker.number.int({ min: 0, max: groups.length - 1 })]
-      const substitutionTeacher = faker.datatype.boolean(0.05) 
-        ? allUsers.find(u => u.role === 'TEACHER') 
-        : null
+  // Create Timetable with structured weekly schedule
+  // Helper function to get dates for a week range
+  function getWeekDates(weeksOffset: number): Date[] {
+    const today = new Date()
+    const dates: Date[] = []
+    const startOfWeek = new Date(today)
+    startOfWeek.setDate(today.getDate() - today.getDay() + 1 + (weeksOffset * 7)) // Monday
+    
+    for (let i = 0; i < 5; i++) { // Monday to Friday
+      const date = new Date(startOfWeek)
+      date.setDate(startOfWeek.getDate() + i)
+      dates.push(date)
+    }
+    return dates
+  }
 
-      // Generate a random date around the current week
-      const today = new Date()
-      // From 7 days ago to 14 days in the future
-      const start = new Date()
-      start.setDate(today.getDate() - 7)
-      const end = new Date()
-      end.setDate(today.getDate() + 14)
-      
-      let randomDate: Date;
-      do {
-        randomDate = faker.date.between({ from: start, to: end });
-      } while (randomDate.getDay() === 0 || randomDate.getDay() === 6);
+  // Create a weekly schedule template (same for all weeks)
+  const weeklySchedule: Array<{ groupId: number, subjectOnTeacherId: number, day: number, lessonNumber: number }> = []
+  
+  // Ensure student and teacher are connected
+  const studentGroup = groups[0] // Use first group for student
+  await prisma.studentsOnGroups.upsert({
+    where: {
+      groupId_studentId: {
+        groupId: studentGroup.id,
+        studentId: studentUser.id
+      }
+    },
+    update: {},
+    create: {
+      studentId: studentUser.id,
+      groupId: studentGroup.id
+    }
+  })
 
-      return prisma.timetable.create({
-        data: {
-          date: randomDate,
-          lessonNumber: faker.number.int({ min: 1, max: 6 }),
-          subjectOnTeacherId: subjectOnTeacher.id,
+  // Track used slots to avoid overlaps: key is "teacherId-date-lessonNumber" or "groupId-date-lessonNumber"
+  const usedSlots = new Set<string>()
+
+  // Generate base weekly schedule for each group
+  for (const group of groups) {
+    const groupSubjects = groupsOnSubjectsOnTeachers.filter(gst => gst.groupId === group.id)
+    if (groupSubjects.length === 0) continue
+
+    // Assign 3-4 lessons per day for each group
+    for (let day = 0; day < 5; day++) { // Monday to Friday
+      const lessonsPerDay = faker.number.int({ min: 3, max: 5 })
+      for (let lessonNum = 1; lessonNum <= lessonsPerDay; lessonNum++) {
+        const randomSubject = faker.helpers.arrayElement(groupSubjects)
+        const subjectOnTeacher = subjectsOnTeachers.find(st => st.id === randomSubject.subjectOnTeacherId)
+        if (!subjectOnTeacher) continue
+
+        weeklySchedule.push({
           groupId: group.id,
-          substitutionTeacherId: substitutionTeacher?.id,
-          isCanceled: faker.datatype.boolean(0.05)
+          subjectOnTeacherId: subjectOnTeacher.id,
+          day,
+          lessonNumber: lessonNum
+        })
+      }
+    }
+  }
+
+  // Generate timetables for past week and future 2 weeks
+  const timetable = []
+  for (let weekOffset = -1; weekOffset <= 2; weekOffset++) {
+    const weekDates = getWeekDates(weekOffset)
+    
+    for (const scheduleItem of weeklySchedule) {
+      const lessonDate = new Date(weekDates[scheduleItem.day])
+      lessonDate.setHours(8 + scheduleItem.lessonNumber, 0, 0, 0)
+      
+      const subjectOnTeacher = subjectsOnTeachers.find(st => st.id === scheduleItem.subjectOnTeacherId)
+      if (!subjectOnTeacher) continue
+
+      // Check for conflicts
+      const teacherSlotKey = `${subjectOnTeacher.teacherId}-${lessonDate.toISOString()}-${scheduleItem.lessonNumber}`
+      const groupSlotKey = `${scheduleItem.groupId}-${lessonDate.toISOString()}-${scheduleItem.lessonNumber}`
+      
+      if (usedSlots.has(teacherSlotKey) || usedSlots.has(groupSlotKey)) {
+        continue // Skip if there's a conflict
+      }
+
+      usedSlots.add(teacherSlotKey)
+      usedSlots.add(groupSlotKey)
+
+      const entry = await prisma.timetable.create({
+        data: {
+          date: lessonDate,
+          lessonNumber: scheduleItem.lessonNumber,
+          subjectOnTeacherId: scheduleItem.subjectOnTeacherId,
+          groupId: scheduleItem.groupId,
+          isCanceled: weekOffset >= 0 ? faker.datatype.boolean(0.03) : false // Rarely cancel future lessons
         }
       })
-    })
-  )
+      timetable.push(entry)
+    }
+  }
 
   // Create Grades
   const grades = await Promise.all(
@@ -234,18 +321,26 @@ async function main() {
 
   // Create Messages
   const messages = await Promise.all(
-    Array.from({ length: 50 }).map((_, index) => {
-      // Ensure first 10 messages are for our test student
+    Array.from({ length: 60 }).map((_, index) => {
+      // Ensure some messages are for/from our test users
       const isForTestStudent = index < 10;
-      const author = isForTestStudent 
-        ? allUsers.find(u => u.role === 'TEACHER')! 
-        : allUsers[faker.number.int({ min: 0, max: allUsers.length - 1 })]
-      
-      const receivers = isForTestStudent 
-        ? [studentUser]
-        : allUsers
-            .filter(u => u.id !== author.id)
-            .slice(0, faker.number.int({ min: 1, max: 3 }))
+      const isForTestTeacher = index >= 10 && index < 20;
+
+      let author: any;
+      let receivers: any[];
+
+      if (isForTestStudent) {
+        author = teacherUser;
+        receivers = [studentUser];
+      } else if (isForTestTeacher) {
+        author = studentUser;
+        receivers = [teacherUser];
+      } else {
+        author = allUsers[faker.number.int({ min: 0, max: allUsers.length - 1 })];
+        receivers = allUsers
+          .filter(u => u.id !== author.id)
+          .slice(0, faker.number.int({ min: 1, max: 3 }));
+      }
 
       const message = prisma.message.create({
         data: {

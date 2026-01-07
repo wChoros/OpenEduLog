@@ -1,0 +1,124 @@
+@use '../../../public/styles/variables'
+
+.check-attendance-container
+  width: 100%
+  max-width: 1000px
+  padding: 30px
+  display: flex
+  flex-direction: column
+  gap: 32px
+
+.attendance-header
+  h1
+    font-size: 32px
+    font-weight: 800
+    color: #1E293B
+    margin: 0
+
+  .lesson-meta
+    color: #64748B
+    font-size: 16px
+    margin-top: 8px
+
+.attendance-list
+  display: flex
+  flex-direction: column
+  gap: 12px
+
+.attendance-row
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding: 20px
+  background: #fff
+  border-radius: 16px
+  border: 1px solid #F1F5F9
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05)
+  transition: box-shadow 0.2s
+
+  &:hover
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1)
+
+.student-info
+  .student-name
+    font-size: 18px
+    font-weight: 600
+    color: #334155
+
+.status-selector
+  display: flex
+  gap: 8px
+  flex-wrap: wrap
+
+.status-btn
+  padding: 8px 16px
+  border-radius: 8px
+  border: 2px solid transparent
+  font-weight: 600
+  font-size: 14px
+  cursor: pointer
+  transition: all 0.2s
+  font-family: inherit
+  background: #F1F5F9
+  color: #64748B
+
+  &:hover
+    transform: translateY(-1px)
+
+  &.active
+    transform: translateY(-2px)
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15)
+
+  &.present
+    &.active
+      background: #10B981
+      color: #fff
+      border-color: #059669
+
+  &.absent
+    &.active
+      background: #EF4444
+      color: #fff
+      border-color: #DC2626
+
+  &.late
+    &.active
+      background: variables.$accent-deep-orange
+      color: #fff
+      border-color: #EA580C
+
+  &.excused
+    &.active
+      background: #3B82F6
+      color: #fff
+      border-color: #2563EB
+
+.attendance-actions
+  display: flex
+  justify-content: flex-end
+
+.save-btn
+  padding: 14px 32px
+  background: variables.$accent-deep-orange
+  color: #fff
+  border: none
+  border-radius: 12px
+  font-size: 16px
+  font-weight: 700
+  cursor: pointer
+  transition: all 0.2s
+  font-family: inherit
+
+  &:hover:not(:disabled)
+    transform: translateY(-2px)
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15)
+
+  &:disabled
+    opacity: 0.6
+    cursor: not-allowed
+
+.attendance-loading, .attendance-error
+  padding: 40px
+  text-align: center
+  font-size: 18px
+  color: #64748B

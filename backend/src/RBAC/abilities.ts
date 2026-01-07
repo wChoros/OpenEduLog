@@ -51,7 +51,7 @@ export function defineAbilitiesFor(user: any) {
    } else if (user.role === 'TEACHER') {
       can('read', 'Group', { teacherId: user.id })
       can('read', 'Subject', { teacherId: user.id })
-      can('read', 'Timetable', { teacherId: user.id })
+      can(['read', 'update'], 'Timetable', { teacherId: user.id })
       can(['add', 'update', 'delete'], 'Grade', { teacherId: user.id })
       can('manage', 'Attendance', { teacherId: user.id })
       can('manage', 'Announcement')

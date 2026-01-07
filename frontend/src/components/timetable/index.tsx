@@ -123,12 +123,16 @@ function formatWeekRange(dateRange: DateRange): string {
    return `${start.toLocaleDateString('en-US', { ...options, year: 'numeric' })} - ${end.toLocaleDateString('en-US', { ...options, year: 'numeric' })}`;
 }
 
-const Index: React.FC = () => {
+interface TimetableProps {
+   basePath?: string
+}
+
+const Index: React.FC<TimetableProps> = ({ basePath = '/dashboard/student/timetable' }) => {
    const [timetableData, setTimetableData] = useState<TimetableItem[] | undefined>()
    const [dateRange] = useState(() => {
       if (
-         window.location.pathname.endsWith('/dashboard/student/timetable') ||
-         window.location.pathname.endsWith('/dashboard/student/timetable/')
+         window.location.pathname.endsWith(basePath) ||
+         window.location.pathname.endsWith(`${basePath}/`)
       ) {
          return getCurrentDateRange()
       }
@@ -188,17 +192,17 @@ const Index: React.FC = () => {
                {formatWeekRange(dateRange)}
             </div>
             <div className="navigationControls">
-               <a href="/dashboard/student/timetable" className="todayButton">Today</a>
+               <a href={basePath} className="todayButton">Today</a>
                <div className="navArrows">
                   <a
-                     href={`/dashboard/student/timetable/${addWeeksToDateRange(dateRange, -1).toString()}`}
+                     href={`${basePath}/${addWeeksToDateRange(dateRange, -1).toString()}`}
                      className="navButton"
                      title="Previous Week"
                   >
                      <img src="/icons/arrow-left.svg" alt="previous week" />
                   </a>
                   <a
-                     href={`/dashboard/student/timetable/${addWeeksToDateRange(dateRange, 1).toString()}`}
+                     href={`${basePath}/${addWeeksToDateRange(dateRange, 1).toString()}`}
                      className="navButton"
                      title="Next Week"
                   >

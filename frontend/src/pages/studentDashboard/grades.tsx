@@ -1,11 +1,10 @@
-import GradesDashboard from '../../components/gradesDashboard'
-// @ts-ignore
-import './dashboardPages.sass'
+import DashboardPage from '../../components/dashboardPage/index.js'
+import { Outlet } from 'react-router'
 
 export default function Page() {
    return (
-      <div className="dashboard-page-wrapper">
-         <GradesDashboard />
-      </div>
+      <DashboardPage>
+         <Outlet />
+      </DashboardPage>
    )
 }

@@ -96,4 +96,54 @@ attendanceRouter.post(
    }
 )
 
+// Bulk mark attendance
+attendanceRouter.post(
+   '/mark',
+   authorize('create', 'Attendance'),
+   async (req: express.Request, res: express.Response) => {
+      const { timetableId, attendees } = req.body
+      // attendees: [{ studentId: number, status: string }]
+
+      if (!timetableId || !attendees || !Array.isArray(attendees)) {
+         res.status(400).json({ message: 'Missing timetableId or attendees array' })
+         return
+      }
+
+      try {
+         const results = []
+         
+         for (const a of attendees) {
+            const existing = await prisma.attendance.findFirst({
+               where: {
+                  studentId: a.studentId,
+                  timetableId: parseInt(timetableId, 10),
+               },
+            })
+
+            if (existing) {
+               const updated = await prisma.attendance.update({
+                  where: { id: existing.id },
+                  data: { status: a.status as any },
+               })
+               results.push(updated)
+            } else {
+               const created = await prisma.attendance.create({
+                  data: {
+                     studentId: a.studentId,
+                     timetableId: parseInt(timetableId, 10),
+                     status: a.status as any,
+                  },
+               })
+               results.push(created)
+            }
+         }
+
+         res.status(200).json(results)
+         return
+      } catch (error) {
+         res.status(500).json({ message: `Internal Server Error: ${error}` })
+      }
+   }
+)
+
 export default attendanceRouter

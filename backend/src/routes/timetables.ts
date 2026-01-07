@@ -73,6 +73,116 @@ timetableRouter.get(
    }
 )
 
+timetableRouter.get('/:recordId', authorize('read', 'Timetable'), async (req, res) => {
+   const { recordId } = req.params
+   try {
+      const timetable = await prisma.timetable.findUnique({
+         where: {
+            id: parseInt(recordId),
+         },
+         include: {
+            subjectOnTeacher: {
+               include: {
+                  subject: {
+                     select: {
+                        name: true,
+                        id: true,
+                     },
+                  },
+                  teacher: {
+                     select: {
+                        firstName: true,
+                        lastName: true,
+                        id: true,
+                     },
+                  },
+               },
+            },
+            substitutionTeacher: {
+               select: {
+                  firstName: true,
+                  lastName: true,
+               },
+            },
+            group: {
+               select: {
+                  name: true,
+                  id: true,
+                  StudentsOnGroups: {
+                     select: {
+                        student: {
+                           select: {
+                              id: true,
+                              firstName: true,
+                              lastName: true,
+                           },
+                        },
+                     },
+                  },
+               },
+            },
+         },
+      })
+
+      if (!timetable) {
+         res.status(404).json({ message: 'Timetable record not found' })
+         return
+      }
+
+      res.status(200).json(timetable)
+      return
+   } catch (error) {
+      res.status(500).json({ message: `Internal Server Error: ${error}` })
+   }
+})
+
+// Mark lesson as completed
+timetableRouter.patch('/:recordId/complete', async (req, res) => {
+   const { recordId } = req.params
+   const user = (req.body as any).user
+   
+   if (!user || user.role !== 'TEACHER') {
+      res.status(403).json({ message: 'Forbidden' })
+      return
+   }
+
+   try {
+      // First, fetch the timetable to check authorization
+      const existing = await prisma.timetable.findUnique({
+         where: { id: parseInt(recordId) },
+         include: {
+            subjectOnTeacher: true,
+         },
+      })
+
+      if (!existing) {
+         res.status(404).json({ message: 'Timetable record not found' })
+         return
+      }
+
+      // Check if the user is the teacher for this timetable
+      if (existing.subjectOnTeacher.teacherId !== user.id) {
+         res.status(403).json({ message: 'Forbidden: Not your lesson' })
+         return
+      }
+
+      // Update the timetable
+      const timetable = await prisma.timetable.update({
+         where: {
+            id: parseInt(recordId),
+         },
+         data: {
+            isCompleted: true,
+         },
+      })
+
+      res.status(200).json(timetable)
+      return
+   } catch (error) {
+      res.status(500).json({ message: `Internal Server Error: ${error}` })
+   }
+})
+
 timetableRouter.get('/group/:groupId', authorize('read', 'Timetable'), async (req, res) => {
    const { groupId } = req.params
    try {

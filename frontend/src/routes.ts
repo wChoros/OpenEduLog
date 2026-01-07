@@ -20,5 +20,13 @@ export default [
       route('attendance', 'pages/studentDashboard/attendance.tsx'),
       route('announcements', 'pages/studentDashboard/allAnnouncements.tsx'),
    ]),
+   route('/dashboard/teacher', 'pages/teacherDashboard/index.tsx', [
+      index('pages/teacherDashboard/overview.tsx'),
+      route('timetable/:weekNumber?', 'pages/teacherDashboard/timetable.tsx'),
+      route('lesson/:lessonId', 'pages/teacherDashboard/lesson.tsx'),
+      route('lessons', 'pages/teacherDashboard/lessons.tsx'),
+      route('attendance/:lessonId', 'pages/teacherDashboard/attendance.tsx'),
+      // Other routes can be added here later
+   ]),
    route('*', 'catchall.tsx'),
 ] satisfies RouteConfig
