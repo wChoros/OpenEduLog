@@ -140,7 +140,7 @@ timetableRouter.get('/:recordId', authorize('read', 'Timetable'), async (req, re
 timetableRouter.patch('/:recordId/complete', async (req, res) => {
    const { recordId } = req.params
    const user = (req.body as any).user
-   
+
    if (!user || user.role !== 'TEACHER') {
       res.status(403).json({ message: 'Forbidden' })
       return

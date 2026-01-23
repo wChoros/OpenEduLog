@@ -234,7 +234,7 @@ authRouter.get('/me', sessionVerify, async (req: Request, res: Response): Promis
 
 authRouter.get('/instanceinfo', (req: Request, res: Response): void => {
    res.json({
-      schoolName: process.env.VITE_SCHOOL_NAME || 'OpenEduLog Default school'
+      schoolName: process.env.VITE_SCHOOL_NAME || 'OpenEduLog Default school',
    })
 })
 
