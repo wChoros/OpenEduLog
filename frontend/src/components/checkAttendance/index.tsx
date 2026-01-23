@@ -60,7 +60,7 @@ export default function CheckAttendance() {
    }, [lessonId])
 
    const handleStatusChange = (studentId: number, status: string) => {
-      setAttendanceMap(prev => ({ ...prev, [studentId]: status }))
+      setAttendanceMap((prev) => ({ ...prev, [studentId]: status }))
    }
 
    const handleSave = async () => {
@@ -101,7 +101,8 @@ export default function CheckAttendance() {
          <header className="attendance-header">
             <h1>{lesson.subjectOnTeacher.subject.name}</h1>
             <p className="lesson-meta">
-               {lesson.group.name} • Lesson #{lesson.lessonNumber} • {new Date(lesson.date).toLocaleDateString()}
+               {lesson.group.name} • Lesson #{lesson.lessonNumber} •{' '}
+               {new Date(lesson.date).toLocaleDateString()}
             </p>
          </header>
 
@@ -109,10 +110,12 @@ export default function CheckAttendance() {
             {lesson.group.StudentsOnGroups?.map(({ student }) => (
                <div key={student.id} className="attendance-row">
                   <div className="student-info">
-                     <span className="student-name">{student.firstName} {student.lastName}</span>
+                     <span className="student-name">
+                        {student.firstName} {student.lastName}
+                     </span>
                   </div>
                   <div className="status-selector">
-                     {['PRESENT', 'ABSENT', 'LATE', 'EXCUSED'].map(status => (
+                     {['PRESENT', 'ABSENT', 'LATE', 'EXCUSED'].map((status) => (
                         <button
                            key={status}
                            className={`status-btn ${status.toLowerCase()} ${attendanceMap[student.id] === status ? 'active' : ''}`}

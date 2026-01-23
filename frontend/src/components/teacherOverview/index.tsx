@@ -20,7 +20,7 @@ interface TimetableItem {
    lessonNumber: number
    subjectOnTeacher: {
       subject: { name: string }
-      teacher: { firstName: string, lastName: string }
+      teacher: { firstName: string; lastName: string }
    }
    group: { name: string }
 }
@@ -34,62 +34,66 @@ export default function TeacherOverview() {
 
    useEffect(() => {
       const getCookie = (name: string) => {
-         const value = `; ${document.cookie}`;
-         const parts = value.split(`; ${name}=`);
-         if (parts.length === 2) return parts.pop()?.split(';').shift();
-         return null;
-      };
+         const value = `; ${document.cookie}`
+         const parts = value.split(`; ${name}=`)
+         if (parts.length === 2) return parts.pop()?.split(';').shift()
+         return null
+      }
 
-      const userId = getCookie('user_id');
-      if (!userId) return;
+      const userId = getCookie('user_id')
+      if (!userId) return
 
       const fetchData = async () => {
          // @ts-ignore
          const apiUrl = import.meta.env.VITE_API_URL
-         const now = new Date();
-         const tomorrow = new Date(now);
-         tomorrow.setDate(now.getDate() + 1);
-         
+         const now = new Date()
+         const tomorrow = new Date(now)
+         tomorrow.setDate(now.getDate() + 1)
+
          try {
             const [annRes, msgRes, tableRes, subRes] = await Promise.all([
                apiFetch(`${apiUrl}/announcements`),
                apiFetch(`${apiUrl}/messages/headers/received/${userId}`),
-               apiFetch(`${apiUrl}/timetables/user/${userId}/${now.toISOString()}/${tomorrow.toISOString()}`),
-               apiFetch(`${apiUrl}/subjects/teacher/${userId}`)
-            ]);
+               apiFetch(
+                  `${apiUrl}/timetables/user/${userId}/${now.toISOString()}/${tomorrow.toISOString()}`
+               ),
+               apiFetch(`${apiUrl}/subjects/teacher/${userId}`),
+            ])
 
-            if (annRes.ok) setAnnouncements((await annRes.json()).slice(0, 3));
+            if (annRes.ok) setAnnouncements((await annRes.json()).slice(0, 3))
             if (msgRes.ok) {
-               const mData = await msgRes.json();
-               setUnreadMessages(mData.filter((m: any) => !m.isRead).length);
+               const mData = await msgRes.json()
+               setUnreadMessages(mData.filter((m: any) => !m.isRead).length)
             }
             if (tableRes.ok) {
-               const tData: TimetableItem[] = await tableRes.json();
-               const sorted = tData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-               const upcoming = sorted.find(item => new Date(item.date) > now);
-               setNextLesson(upcoming || null);
+               const tData: TimetableItem[] = await tableRes.json()
+               const sorted = tData.sort(
+                  (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+               )
+               const upcoming = sorted.find((item) => new Date(item.date) > now)
+               setNextLesson(upcoming || null)
             }
             if (subRes.ok) {
-               const sData = await subRes.json();
+               const sData = await subRes.json()
                // Count unique groups from subjects
-               const groups = new Set();
+               const groups = new Set()
                sData.forEach((sub: any) => {
                   sub.SubjectsOnTeachers.forEach((sot: any) => {
                      sot.GroupsOnSubjectsOnTeachers.forEach((gsot: any) => {
-                        groups.add(gsot.groupId);
-                     });
-                  });
-               });
-               setGroupCount(groups.size);
+                        groups.add(gsot.groupId)
+                     })
+                  })
+               })
+               setGroupCount(groups.size)
             }
          } catch (error) {
-            console.error('Failed to fetch teacher dashboard data:', error);
+            console.error('Failed to fetch teacher dashboard data:', error)
          } finally {
-            setLoading(false);
+            setLoading(false)
          }
-      };
-      fetchData();
-   }, []);
+      }
+      fetchData()
+   }, [])
 
    return (
       <div className="overview-container">
@@ -134,7 +138,9 @@ export default function TeacherOverview() {
             <div className="dashboard-section highlight-section">
                <div className="section-title">
                   <h2>Upcoming Class</h2>
-                  <a href="/dashboard/teacher/timetable" className="see-all">View Timetable</a>
+                  <a href="/dashboard/teacher/timetable" className="see-all">
+                     View Timetable
+                  </a>
                </div>
                <div className="glass-card">
                   {loading ? (
@@ -143,8 +149,19 @@ export default function TeacherOverview() {
                      <div className="next-lesson-details">
                         <h3 className="subject">{nextLesson.subjectOnTeacher.subject.name}</h3>
                         <p className="group">Group: {nextLesson.group.name}</p>
-                        <p className="time">Lesson #{nextLesson.lessonNumber} - {new Date(nextLesson.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                        <a href={`/dashboard/teacher/lesson/${nextLesson.id}`} className="action-btn">Open Lesson</a>
+                        <p className="time">
+                           Lesson #{nextLesson.lessonNumber} -{' '}
+                           {new Date(nextLesson.date).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                           })}
+                        </p>
+                        <a
+                           href={`/dashboard/teacher/lesson/${nextLesson.id}`}
+                           className="action-btn"
+                        >
+                           Open Lesson
+                        </a>
                      </div>
                   ) : (
                      <p>No more lessons scheduled for today.</p>
@@ -155,9 +172,11 @@ export default function TeacherOverview() {
             <div className="dashboard-section activity-section">
                <div className="section-title">
                   <h2>Announcements</h2>
-                  <a href="/dashboard/teacher/announcements" className="see-all">Bulletin Board →</a>
+                  <a href="/dashboard/teacher/announcements" className="see-all">
+                     Bulletin Board →
+                  </a>
                </div>
-               
+
                <div className="announcements-feed">
                   {loading ? (
                      <p>Fetching updates...</p>
@@ -171,8 +190,12 @@ export default function TeacherOverview() {
                            <div className="card-header">
                               <h3>{ann.title}</h3>
                               <div className="meta-info">
-                                 <span className="author">{ann.user.firstName} {ann.user.lastName}</span>
-                                 <span className="date">{new Date(ann.createdAt).toLocaleDateString()}</span>
+                                 <span className="author">
+                                    {ann.user.firstName} {ann.user.lastName}
+                                 </span>
+                                 <span className="date">
+                                    {new Date(ann.createdAt).toLocaleDateString()}
+                                 </span>
                               </div>
                            </div>
                            <div className="content">{ann.content.slice(0, 100)}...</div>

@@ -9,14 +9,14 @@ interface TimetableItem {
    lessonNumber: number
    subjectOnTeacher: {
       subject: { name: string }
-      teacher: { firstName: string, lastName: string }
+      teacher: { firstName: string; lastName: string }
    }
    group: { name: string }
    isCompleted?: boolean
 }
 
 interface LessonProps {
-    lessonId: string | undefined
+   lessonId: string | undefined
 }
 
 export default function Lesson({ lessonId }: LessonProps) {
@@ -52,7 +52,7 @@ export default function Lesson({ lessonId }: LessonProps) {
          })
          if (res.ok) {
             // Update only the isCompleted field instead of replacing the entire object
-            setLesson(prev => prev ? { ...prev, isCompleted: true } : null)
+            setLesson((prev) => (prev ? { ...prev, isCompleted: true } : null))
             alert('Lesson marked as completed!')
          } else {
             alert('Failed to save lesson.')
@@ -72,33 +72,54 @@ export default function Lesson({ lessonId }: LessonProps) {
          <div className="lesson-container">
             <header className="lesson-header">
                <h1>{lesson?.subjectOnTeacher.subject.name || 'Lesson'}</h1>
-               <p>{lesson?.group.name} — Lesson #{lesson?.lessonNumber}</p>
+               <p>
+                  {lesson?.group.name} — Lesson #{lesson?.lessonNumber}
+               </p>
                {lesson?.isCompleted && <span className="completed-badge">✓ Completed</span>}
             </header>
 
             <div className="lesson-actions">
-               <a href={`/dashboard/teacher/attendance/${lessonId}`} className="lesson-btn attendance">
+               <a
+                  href={`/dashboard/teacher/attendance/${lessonId}`}
+                  className="lesson-btn attendance"
+               >
                   <img src="/icons/attendance.svg" alt="" />
                   Check Attendance
                </a>
-               <button className="lesson-btn grades" onClick={() => alert('Adding grades coming soon!')}>
+               <button
+                  className="lesson-btn grades"
+                  onClick={() => alert('Adding grades coming soon!')}
+               >
                   <img src="/icons/grades.svg" alt="" />
                   Add Grades
                </button>
-               <button 
-                  className="lesson-btn save" 
+               <button
+                  className="lesson-btn save"
                   onClick={handleSave}
                   disabled={saving || lesson?.isCompleted}
                >
                   <img src="/icons/overview.svg" alt="" />
-                  {lesson?.isCompleted ? 'Lesson Completed' : saving ? 'Saving...' : 'Mark as Complete'}
+                  {lesson?.isCompleted
+                     ? 'Lesson Completed'
+                     : saving
+                       ? 'Saving...'
+                       : 'Mark as Complete'}
                </button>
             </div>
 
             <section className="lesson-details-placeholder">
                <div className="glass-card">
                   <h3>Lesson Content</h3>
-                  <textarea placeholder="Write what was discussed today..." rows={10} style={{ width: '100%', padding: '15px', borderRadius: '12px', border: '1px solid #ddd' }} />
+                  <textarea
+                     placeholder="Write what was discussed today..."
+                     rows={10}
+                     style={{
+                        width: '100%',
+                        padding: '15px',
+                        borderRadius: '12px',
+                        border: '1px solid #ddd',
+                     }}
+                  />
                </div>
             </section>
          </div>

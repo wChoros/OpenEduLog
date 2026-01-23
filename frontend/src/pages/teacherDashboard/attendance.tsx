@@ -4,7 +4,7 @@ import CheckAttendance from '../../components/checkAttendance/index.js'
 
 export default function AttendancePage() {
    const { lessonId } = useParams()
-   
+
    if (!lessonId) {
       return (
          <DashboardPage>

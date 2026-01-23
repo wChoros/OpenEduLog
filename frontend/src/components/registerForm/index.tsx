@@ -96,7 +96,14 @@ const RegisterForm = () => {
          <input type="password" name="confirm_password" placeholder="Confirm Password" required />
          <button type="submit">Register</button>
          {errorMessage && <p className="error-message">{errorMessage}</p>}
-         {successMessage && <p className="success-message" style={{ color: 'green', width: '100%', textAlign: 'center' }}>{successMessage}</p>}
+         {successMessage && (
+            <p
+               className="success-message"
+               style={{ color: 'green', width: '100%', textAlign: 'center' }}
+            >
+               {successMessage}
+            </p>
+         )}
       </form>
    )
 }

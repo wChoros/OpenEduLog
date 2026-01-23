@@ -34,54 +34,54 @@ export default function StudentOverview() {
 
    useEffect(() => {
       const getCookie = (name: string) => {
-         const value = `; ${document.cookie}`;
-         const parts = value.split(`; ${name}=`);
-         if (parts.length === 2) return parts.pop()?.split(';').shift();
-         return null;
-      };
+         const value = `; ${document.cookie}`
+         const parts = value.split(`; ${name}=`)
+         if (parts.length === 2) return parts.pop()?.split(';').shift()
+         return null
+      }
 
-      const userId = getCookie('user_id');
-      const role = getCookie('role');
-      setUserRole(role || null);
+      const userId = getCookie('user_id')
+      const role = getCookie('role')
+      setUserRole(role || null)
 
-      if (!userId) return;
+      if (!userId) return
 
       const fetchData = async () => {
          // @ts-ignore
          const apiUrl = import.meta.env.VITE_API_URL
-         
+
          try {
             const [annRes, gradesRes, attRes, msgRes] = await Promise.all([
                apiFetch(`${apiUrl}/announcements`),
                apiFetch(`${apiUrl}/grades/${userId}`),
                apiFetch(`${apiUrl}/attendance/student/${userId}`),
-               apiFetch(`${apiUrl}/messages/headers/received/${userId}`)
-            ]);
+               apiFetch(`${apiUrl}/messages/headers/received/${userId}`),
+            ])
 
-            if (annRes.ok) setAnnouncements((await annRes.json()).slice(0, 3));
+            if (annRes.ok) setAnnouncements((await annRes.json()).slice(0, 3))
             if (gradesRes.ok) {
-               const gData = await gradesRes.json();
-               setGrades(gData.slice(0, 4));
+               const gData = await gradesRes.json()
+               setGrades(gData.slice(0, 4))
             }
             if (attRes.ok) {
-               const aData = await attRes.json();
-               const pendingCount = aData.filter((a: any) => 
-                  (a.status === 'ABSENT' || a.status === 'LATE') && !a.justification
-               ).length;
-               setPendingAttendance(pendingCount);
+               const aData = await attRes.json()
+               const pendingCount = aData.filter(
+                  (a: any) => (a.status === 'ABSENT' || a.status === 'LATE') && !a.justification
+               ).length
+               setPendingAttendance(pendingCount)
             }
             if (msgRes.ok) {
-               const mData = await msgRes.json();
-               setUnreadMessages(mData.filter((m: any) => !m.isRead).length);
+               const mData = await msgRes.json()
+               setUnreadMessages(mData.filter((m: any) => !m.isRead).length)
             }
          } catch (error) {
-            console.error('Failed to fetch dashboard data:', error);
+            console.error('Failed to fetch dashboard data:', error)
          } finally {
-            setLoading(false);
+            setLoading(false)
          }
-      };
-      fetchData();
-   }, []);
+      }
+      fetchData()
+   }, [])
 
    const handleCreate = async () => {
       if (!newTitle || !newContent) return
@@ -91,11 +91,14 @@ export default function StudentOverview() {
          const res = await apiFetch(`${apiUrl}/announcements`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: newTitle, content: newContent })
+            body: JSON.stringify({ title: newTitle, content: newContent }),
          })
          if (res.ok) {
             const data = await res.json()
-            setAnnouncements([{ ...data, user: { firstName: 'You', lastName: '' } }, ...announcements])
+            setAnnouncements([
+               { ...data, user: { firstName: 'You', lastName: '' } },
+               ...announcements,
+            ])
             setShowModal(false)
             setNewTitle('')
             setNewContent('')
@@ -106,10 +109,10 @@ export default function StudentOverview() {
    }
 
    const getGradeClass = (val: number) => {
-      if (val >= 4.5) return 'high';
-      if (val >= 3) return 'mid';
-      return 'low';
-   };
+      if (val >= 4.5) return 'high'
+      if (val >= 3) return 'mid'
+      return 'low'
+   }
 
    return (
       <div className="overview-container">
@@ -127,7 +130,9 @@ export default function StudentOverview() {
                   <h4>Attendance Alert</h4>
                   <p>You have {pendingAttendance} absence(s) that need justification.</p>
                </div>
-               <a href="/dashboard/student/attendance" className="action-btn">Justify Now</a>
+               <a href="/dashboard/student/attendance" className="action-btn">
+                  Justify Now
+               </a>
             </div>
          )}
 
@@ -165,7 +170,9 @@ export default function StudentOverview() {
             <div className="dashboard-section highlight-section">
                <div className="section-title">
                   <h2>Recent Achievement</h2>
-                  <a href="/dashboard/student/grades" className="see-all">View All Grades</a>
+                  <a href="/dashboard/student/grades" className="see-all">
+                     View All Grades
+                  </a>
                </div>
                <div className="glass-card">
                   <div className="recent-grades-list">
@@ -174,7 +181,7 @@ export default function StudentOverview() {
                      ) : grades.length === 0 ? (
                         <p>No grades yet. Keep working hard!</p>
                      ) : (
-                        grades.map(grade => (
+                        grades.map((grade) => (
                            <div key={grade.id} className="grade-item">
                               <div className="subject-info">
                                  <span className="subject">{grade.subjectName}</span>
@@ -194,7 +201,9 @@ export default function StudentOverview() {
                <div className="section-title">
                   <h2>Announcements</h2>
                   <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                     <a href="/dashboard/student/announcements" className="see-all">Bulletin Board →</a>
+                     <a href="/dashboard/student/announcements" className="see-all">
+                        Bulletin Board →
+                     </a>
                      {(userRole === 'TEACHER' || userRole === 'ADMIN') && (
                         <button className="create-btn" onClick={() => setShowModal(true)}>
                            + Create New
@@ -202,7 +211,7 @@ export default function StudentOverview() {
                      )}
                   </div>
                </div>
-               
+
                <div className="announcements-feed">
                   {loading ? (
                      <p>Fetching updates...</p>
@@ -216,8 +225,12 @@ export default function StudentOverview() {
                            <div className="card-header">
                               <h3>{ann.title}</h3>
                               <div className="meta-info">
-                                 <span className="author">{ann.user.firstName} {ann.user.lastName}</span>
-                                 <span className="date">{new Date(ann.createdAt).toLocaleDateString()}</span>
+                                 <span className="author">
+                                    {ann.user.firstName} {ann.user.lastName}
+                                 </span>
+                                 <span className="date">
+                                    {new Date(ann.createdAt).toLocaleDateString()}
+                                 </span>
                               </div>
                            </div>
                            <div className="content">{ann.content.slice(0, 100)}...</div>
@@ -232,20 +245,24 @@ export default function StudentOverview() {
             <div className="modal-overlay">
                <div className="announcement-modal">
                   <h2>Post New Announcement</h2>
-                  <input 
-                     type="text" 
-                     placeholder="Announcement Title" 
-                     value={newTitle} 
-                     onChange={(e) => setNewTitle(e.target.value)} 
+                  <input
+                     type="text"
+                     placeholder="Announcement Title"
+                     value={newTitle}
+                     onChange={(e) => setNewTitle(e.target.value)}
                   />
-                  <textarea 
-                     placeholder="Details and information..." 
-                     value={newContent} 
-                     onChange={(e) => setNewContent(e.target.value)} 
+                  <textarea
+                     placeholder="Details and information..."
+                     value={newContent}
+                     onChange={(e) => setNewContent(e.target.value)}
                   />
                   <div className="modal-actions">
-                     <button className="cancel-btn" onClick={() => setShowModal(false)}>Cancel</button>
-                     <button className="submit-btn" onClick={handleCreate}>Post Update</button>
+                     <button className="cancel-btn" onClick={() => setShowModal(false)}>
+                        Cancel
+                     </button>
+                     <button className="submit-btn" onClick={handleCreate}>
+                        Post Update
+                     </button>
                   </div>
                </div>
             </div>

@@ -67,17 +67,15 @@ export default function AnnouncementsList() {
                               {ann.user.firstName} {ann.user.lastName}
                            </span>
                            <span className="post-date">
-                              {new Date(ann.createdAt).toLocaleDateString('en-US', { 
-                                 month: 'short', 
-                                 day: 'numeric', 
-                                 year: 'numeric' 
+                              {new Date(ann.createdAt).toLocaleDateString('en-US', {
+                                 month: 'short',
+                                 day: 'numeric',
+                                 year: 'numeric',
                               })}
                            </span>
                         </div>
                      </div>
-                     <div className="item-content">
-                        {ann.content}
-                     </div>
+                     <div className="item-content">{ann.content}</div>
                   </div>
                ))
             )}

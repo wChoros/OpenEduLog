@@ -113,14 +113,14 @@ function addWeeksToDateRange(dateRange: DateRange, num_of_weeks: number): DateRa
 }
 
 function formatWeekRange(dateRange: DateRange): string {
-   const start = dateRange.startDate;
-   const end = dateRange.endDate;
-   const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
-   
+   const start = dateRange.startDate
+   const end = dateRange.endDate
+   const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
+
    if (start.getFullYear() === end.getFullYear()) {
-      return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}, ${start.getFullYear()}`;
+      return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}, ${start.getFullYear()}`
    }
-   return `${start.toLocaleDateString('en-US', { ...options, year: 'numeric' })} - ${end.toLocaleDateString('en-US', { ...options, year: 'numeric' })}`;
+   return `${start.toLocaleDateString('en-US', { ...options, year: 'numeric' })} - ${end.toLocaleDateString('en-US', { ...options, year: 'numeric' })}`
 }
 
 interface TimetableProps {
@@ -188,11 +188,11 @@ const Index: React.FC<TimetableProps> = ({ basePath = '/dashboard/student/timeta
          <h1 className="dashboardSectionTitle">Timetable</h1>
 
          <div className="timetableHeaderActions">
-            <div className="rangeDisplay">
-               {formatWeekRange(dateRange)}
-            </div>
+            <div className="rangeDisplay">{formatWeekRange(dateRange)}</div>
             <div className="navigationControls">
-               <a href={basePath} className="todayButton">Today</a>
+               <a href={basePath} className="todayButton">
+                  Today
+               </a>
                <div className="navArrows">
                   <a
                      href={`${basePath}/${addWeeksToDateRange(dateRange, -1).toString()}`}

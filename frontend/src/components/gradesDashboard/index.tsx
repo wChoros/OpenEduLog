@@ -92,7 +92,7 @@ export default function GradesDashboard() {
          gpa,
          totalGrades: gradesList.length,
          bestSubject: bestSub,
-         gradeDistribution: []
+         gradeDistribution: [],
       }
    }
 
@@ -103,16 +103,18 @@ export default function GradesDashboard() {
          return acc
       }, {})
 
-      return Object.keys(groups).map((name) => {
-         const subGrades = groups[name]
-         const subWeight = subGrades.reduce((acc: number, g: Grade) => acc + g.weight, 0)
-         const subSum = subGrades.reduce((acc: number, g: Grade) => acc + g.value * g.weight, 0)
-         return {
-            subjectName: name,
-            grades: subGrades,
-            average: subSum / subWeight
-         }
-      }).sort((a, b) => b.average - a.average)
+      return Object.keys(groups)
+         .map((name) => {
+            const subGrades = groups[name]
+            const subWeight = subGrades.reduce((acc: number, g: Grade) => acc + g.weight, 0)
+            const subSum = subGrades.reduce((acc: number, g: Grade) => acc + g.value * g.weight, 0)
+            return {
+               subjectName: name,
+               grades: subGrades,
+               average: subSum / subWeight,
+            }
+         })
+         .sort((a, b) => b.average - a.average)
    }
 
    if (loading) return <div className="loader">Loading your performance...</div>
@@ -138,7 +140,15 @@ export default function GradesDashboard() {
             </div>
             <div className="stat-card">
                <span className="stat-label">Best Subject</span>
-               <span className="stat-value" style={{ fontSize: '24px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+               <span
+                  className="stat-value"
+                  style={{
+                     fontSize: '24px',
+                     whiteSpace: 'nowrap',
+                     overflow: 'hidden',
+                     textOverflow: 'ellipsis',
+                  }}
+               >
                   {stats.bestSubject}
                </span>
                <span className="stat-subtext">Highest Subject Average</span>
@@ -162,10 +172,16 @@ export default function GradesDashboard() {
                         {group.grades.map((grade) => {
                            const isHigh = grade.value >= 5
                            const isLow = grade.value <= 2
-                           const gradeClass = isHigh ? 'high-grade' : isLow ? 'low-grade' : 'mid-grade'
-                           
-                           const catClass = grade.weight >= 5 ? 'exam' : grade.weight >= 3 ? 'quiz' : 'homework'
-                           const catName = grade.weight >= 5 ? 'EXAM' : grade.weight >= 3 ? 'QUIZ' : 'TASK'
+                           const gradeClass = isHigh
+                              ? 'high-grade'
+                              : isLow
+                                ? 'low-grade'
+                                : 'mid-grade'
+
+                           const catClass =
+                              grade.weight >= 5 ? 'exam' : grade.weight >= 3 ? 'quiz' : 'homework'
+                           const catName =
+                              grade.weight >= 5 ? 'EXAM' : grade.weight >= 3 ? 'QUIZ' : 'TASK'
 
                            return (
                               <div key={grade.id} className="grade-item">
@@ -173,15 +189,13 @@ export default function GradesDashboard() {
                                     {grade.value}
                                  </div>
                                  <div className="grade-desc">
-                                    <div className="desc-text">{grade.description || 'Subject Assessment'}</div>
+                                    <div className="desc-text">
+                                       {grade.description || 'Subject Assessment'}
+                                    </div>
                                     <div className="date-text">Academic Year 2024/25</div>
                                  </div>
-                                 <div className="grade-weight">
-                                    Weight: {grade.weight}
-                                 </div>
-                                 <div className={`grade-category ${catClass}`}>
-                                    {catName}
-                                 </div>
+                                 <div className="grade-weight">Weight: {grade.weight}</div>
+                                 <div className={`grade-category ${catClass}`}>{catName}</div>
                               </div>
                            )
                         })}

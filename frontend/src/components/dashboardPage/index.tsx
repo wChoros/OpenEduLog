@@ -7,9 +7,5 @@ interface DashboardPageProps {
 }
 
 export default function DashboardPage({ children }: DashboardPageProps) {
-   return (
-      <div className="dashboard-page-wrapper">
-         {children}
-      </div>
-   )
+   return <div className="dashboard-page-wrapper">{children}</div>
 }

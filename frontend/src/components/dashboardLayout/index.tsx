@@ -15,13 +15,15 @@ interface DashboardLayoutProps {
    children: ReactNode
 }
 
-export default function DashboardLayout({ roleDisplayName, links, children }: DashboardLayoutProps) {
+export default function DashboardLayout({
+   roleDisplayName,
+   links,
+   children,
+}: DashboardLayoutProps) {
    return (
       <div className="dashboard-layout">
          <DashboardNavigation roleDisplayName={roleDisplayName} links={links} />
-         <div className="dashboard-content">
-            {children}
-         </div>
+         <div className="dashboard-content">{children}</div>
       </div>
    )
 }

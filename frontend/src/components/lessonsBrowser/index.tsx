@@ -33,13 +33,15 @@ export default function LessonsBrowser() {
             const meRes = await apiFetch(`${apiUrl}/auth/me`)
             if (meRes.ok) {
                const userData = await meRes.json()
-               
+
                // Fetch lessons for the teacher
                const now = new Date()
                const startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString()
                const endDate = new Date(now.getFullYear(), now.getMonth() + 2, 0).toISOString()
-               
-               const lessonsRes = await apiFetch(`${apiUrl}/timetables/user/${userData.id}/${startDate}/${endDate}`)
+
+               const lessonsRes = await apiFetch(
+                  `${apiUrl}/timetables/user/${userData.id}/${startDate}/${endDate}`
+               )
                if (lessonsRes.ok) {
                   const data = await lessonsRes.json()
                   setLessons(data)
@@ -59,15 +61,15 @@ export default function LessonsBrowser() {
       let filtered = [...lessons]
 
       if (filterSubject !== 'all') {
-         filtered = filtered.filter(l => l.subjectOnTeacher.subject.name === filterSubject)
+         filtered = filtered.filter((l) => l.subjectOnTeacher.subject.name === filterSubject)
       }
 
       if (filterStatus === 'upcoming') {
-         filtered = filtered.filter(l => new Date(l.date) >= new Date() && !l.isCanceled)
+         filtered = filtered.filter((l) => new Date(l.date) >= new Date() && !l.isCanceled)
       } else if (filterStatus === 'past') {
-         filtered = filtered.filter(l => new Date(l.date) < new Date())
+         filtered = filtered.filter((l) => new Date(l.date) < new Date())
       } else if (filterStatus === 'canceled') {
-         filtered = filtered.filter(l => l.isCanceled)
+         filtered = filtered.filter((l) => l.isCanceled)
       }
 
       // Sort by date and time
@@ -78,37 +80,40 @@ export default function LessonsBrowser() {
 
    // Split lessons into past and upcoming
    const now = new Date()
-   const upcomingLessons = filteredLessons.filter(l => new Date(l.date) >= now && !l.isCanceled)
-   const pastLessons = filteredLessons.filter(l => new Date(l.date) < now || l.isCanceled)
+   const upcomingLessons = filteredLessons.filter((l) => new Date(l.date) >= now && !l.isCanceled)
+   const pastLessons = filteredLessons.filter((l) => new Date(l.date) < now || l.isCanceled)
 
    // Group by date
    const groupByDate = (lessonsList: Lesson[]) => {
-      return lessonsList.reduce((groups, lesson) => {
-         const dateKey = new Date(lesson.date).toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-         })
-         if (!groups[dateKey]) {
-            groups[dateKey] = []
-         }
-         groups[dateKey].push(lesson)
-         return groups
-      }, {} as Record<string, Lesson[]>)
+      return lessonsList.reduce(
+         (groups, lesson) => {
+            const dateKey = new Date(lesson.date).toLocaleDateString('en-US', {
+               weekday: 'long',
+               year: 'numeric',
+               month: 'long',
+               day: 'numeric',
+            })
+            if (!groups[dateKey]) {
+               groups[dateKey] = []
+            }
+            groups[dateKey].push(lesson)
+            return groups
+         },
+         {} as Record<string, Lesson[]>
+      )
    }
 
    const upcomingGrouped = groupByDate(upcomingLessons)
    const pastGrouped = groupByDate(pastLessons)
 
-   const subjects = Array.from(new Set(lessons.map(l => l.subjectOnTeacher.subject.name)))
+   const subjects = Array.from(new Set(lessons.map((l) => l.subjectOnTeacher.subject.name)))
 
    if (loading) return <div className="lessons-loading">Loading lessons...</div>
 
    const renderLessonCard = (lesson: Lesson) => {
       const lessonDate = new Date(lesson.date)
       const isPast = lessonDate < now
-      
+
       return (
          <a
             key={lesson.id}
@@ -157,8 +162,10 @@ export default function LessonsBrowser() {
                   className="filter-select"
                >
                   <option value="all">All Subjects</option>
-                  {subjects.map(subject => (
-                     <option key={subject} value={subject}>{subject}</option>
+                  {subjects.map((subject) => (
+                     <option key={subject} value={subject}>
+                        {subject}
+                     </option>
                   ))}
                </select>
             </div>
@@ -202,9 +209,7 @@ export default function LessonsBrowser() {
                      {Object.entries(upcomingGrouped).map(([dateKey, dayLessons]) => (
                         <div key={dateKey} className="lessons-day-group">
                            <h3 className="day-header">{dateKey}</h3>
-                           <div className="lessons-grid">
-                              {dayLessons.map(renderLessonCard)}
-                           </div>
+                           <div className="lessons-grid">{dayLessons.map(renderLessonCard)}</div>
                         </div>
                      ))}
                   </div>
@@ -217,18 +222,16 @@ export default function LessonsBrowser() {
                         <img src="/icons/attendance.svg" alt="" className="section-icon" />
                         Past Lessons
                      </h2>
-                     {Object.entries(pastGrouped).slice(0, 10).map(([dateKey, dayLessons]) => (
-                        <div key={dateKey} className="lessons-day-group">
-                           <h3 className="day-header">{dateKey}</h3>
-                           <div className="lessons-grid">
-                              {dayLessons.map(renderLessonCard)}
+                     {Object.entries(pastGrouped)
+                        .slice(0, 10)
+                        .map(([dateKey, dayLessons]) => (
+                           <div key={dateKey} className="lessons-day-group">
+                              <h3 className="day-header">{dateKey}</h3>
+                              <div className="lessons-grid">{dayLessons.map(renderLessonCard)}</div>
                            </div>
-                        </div>
-                     ))}
+                        ))}
                      {Object.keys(pastGrouped).length > 10 && (
-                        <div className="show-more">
-                           Showing 10 most recent past lessons
-                        </div>
+                        <div className="show-more">Showing 10 most recent past lessons</div>
                      )}
                   </div>
                )}

@@ -27,7 +27,7 @@ const DashboardNavigation = ({ roleDisplayName, links }: DashboardNavigationProp
          try {
             const [meRes, infoRes] = await Promise.all([
                apiFetch(`${apiUrl}/auth/me`),
-               apiFetch(`${apiUrl}/auth/instanceinfo`)
+               apiFetch(`${apiUrl}/auth/instanceinfo`),
             ])
 
             if (meRes.ok) {
@@ -50,7 +50,7 @@ const DashboardNavigation = ({ roleDisplayName, links }: DashboardNavigationProp
       const apiUrl = import.meta.env.VITE_API_URL
       try {
          const res = await apiFetch(`${apiUrl}/auth/logout`, {
-            method: 'POST'
+            method: 'POST',
          })
          if (res.ok) {
             document.cookie = 'role=; Max-Age=0; path=/;'
